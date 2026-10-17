@@ -1,3 +1,9 @@
+# v0.5.203 (2026-10-18) · 1 commit
+
+## What Was Fixed
+
+- **CodeBuddy Intl (`cbai/*`) failed 100% of requests with HTTP 400 code 11128**: the intl gateway (codebuddy.ai) added "channel verification" on 2026-10-15, so every request that did not carry the `X-Conversation-*` header family the official IDE sends was rejected with `11128` ("conversation id missing", displayTips: "This call failed channel verification, possibly because it was not sent from an official client"). `CodeBuddyIntlExecutor` now overrides `buildHeaders` to mirror the official client: `X-Conversation-ID` is derived stably from the session key (RFC-4122-v5-shaped UUID, falling back to the opening user message, then to a random UUID), plus a fresh `X-Conversation-Request-ID` and `X-Conversation-Message-ID` per request. Verified A/B against the live upstream with the same credentials and body: headers absent → `400`/`11128`, headers present → `200` with normal SSE streaming. `codebuddy-cn` (copilot.tencent.com) is not gated upstream and stays untouched.
+
 # v0.5.202 (2026-10-17) · 2 commits
 
 ## What Was Fixed
