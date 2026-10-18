@@ -1,8 +1,25 @@
-# v0.5.214 (2026-10-18) · 1 commit
+# v0.5.216 (2026-10-18) · 1 commit
 
 ## What Was Fixed
 
 - **CodeBuddy Intl (`cbai/*`) failed 100% of requests with HTTP 400 code 11128**: the intl gateway (codebuddy.ai) added "channel verification" on 2026-10-15, so every request that did not carry the `X-Conversation-*` header family the official IDE sends was rejected with `11128` ("conversation id missing", displayTips: "This call failed channel verification, possibly because it was not sent from an official client"). `CodeBuddyIntlExecutor` now overrides `buildHeaders` to mirror the official client: `X-Conversation-ID` is derived stably from the session key (RFC-4122-v5-shaped UUID, falling back to the opening user message, then to a random UUID), plus a fresh `X-Conversation-Request-ID` and `X-Conversation-Message-ID` per request. Verified A/B against the live upstream with the same credentials and body: headers absent → `400`/`11128`, headers present → `200` with normal SSE streaming. `codebuddy-cn` (copilot.tencent.com) is not gated upstream and stays untouched.
+
+# v0.5.215 (2026-10-18) · 1 commit
+
+## What Was Fixed
+
+- **Qoder and Cline model imports report progress in the notification bell**: the two batch import handlers on a provider page only disabled their button and spun an inline icon, so a 200-model import gave no progress and the operator had to stay on the page watching a spinner. Both now `start` a task in `taskStore` (the same store the backup, key, proxy-pool and account imports already use), `update` it per model with the model id and an `i/n` count, and `finish` it on every exit path — success, nothing-new, empty list, fetch error and exception alike. The bell announces the finished run like the other imports, and no floating progress UI is reintroduced.
+
+# v0.5.214 (2026-10-18) · 1 commit
+
+- refactor(ui): plugin marks are literal objects chosen by the user.
+  - Direction locked via sequential prompts: symbols must depict the
+    familiar thing (mountain-in-frame, eye, brain+arrow, torn brain,
+    rocket, shield+check, scissors, wrench, broom) instead of an
+    abstraction that is hard to guess.
+  - PluginMark redrawn on the same single-outline grammar: uniform 2px
+    round-cap stroke, caller-owned ink, at most one accent dot where the
+    action lands.
 
 # v0.5.213 (2026-10-18) · 1 commit
 
