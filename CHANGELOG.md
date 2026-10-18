@@ -1,8 +1,96 @@
-# v0.5.203 (2026-10-18) · 1 commit
+# v0.5.214 (2026-10-18) · 1 commit
 
 ## What Was Fixed
 
 - **CodeBuddy Intl (`cbai/*`) failed 100% of requests with HTTP 400 code 11128**: the intl gateway (codebuddy.ai) added "channel verification" on 2026-10-15, so every request that did not carry the `X-Conversation-*` header family the official IDE sends was rejected with `11128` ("conversation id missing", displayTips: "This call failed channel verification, possibly because it was not sent from an official client"). `CodeBuddyIntlExecutor` now overrides `buildHeaders` to mirror the official client: `X-Conversation-ID` is derived stably from the session key (RFC-4122-v5-shaped UUID, falling back to the opening user message, then to a random UUID), plus a fresh `X-Conversation-Request-ID` and `X-Conversation-Message-ID` per request. Verified A/B against the live upstream with the same credentials and body: headers absent → `400`/`11128`, headers present → `200` with normal SSE streaming. `codebuddy-cn` (copilot.tencent.com) is not gated upstream and stays untouched.
+
+# v0.5.213 (2026-10-18) · 1 commit
+
+- refactor(ui): the nine plugin/capability marks are redrawn as one gridded,
+  single-outline family.
+  - All marks share the same 2.0 round-cap stroke, live in the same 17-unit box
+    and use at most two gridded primitives; the hand-drawn arcs, the 14% plates
+    and the mixed fill/outline grammar are gone.
+  - One filled accent per mark, only on the thing being acted on: the pupil,
+    the payload tread, the active node, the crossing at the apex. JSON Guard
+    drops its payload dot - braces already say code, and the dot collided with
+    Image Vision's frame-dot at 12px.
+  - Think Deeper is a descending staircase with a filled tread (it used to read
+    as a sort/filter bar set and tangled with the funnel), and Context Squeezer
+    is a single bar pressed by two chevrons.
+
+# v0.5.212 (2026-10-18) · 1 commit
+
+- refactor(ui): the marks are drawn glyphs again, not text monograms.
+  - PluginMark is back to unique SVG paths (viewfinder, eye, narrowing plates,
+    chain graph, bolt, braces, presses, bridge, funnel) that stay legible at
+    12px and 24px; a text render stopped reading as an icon.
+  - The single-accent rule from v0.5.211 stays: no hue in the constants, the
+    caller picks the ink (theme accent on the tile, muted on a dense row).
+  - Stroke weights are explicit where the surface needs them (1.9 in
+    CapacityBadges, 2.4 on 12px model rows).
+
+# v0.5.211 (2026-10-18) · 1 commit
+
+- refactor(ui): the plugin marks are monograms in one accent instead of seven
+  pictograms in seven saturated hues.
+  - PluginMark draws two letters (IV, TD, SM, JG, CS, OB, AS) in the caller's
+    ink; native vision and reasoning get EY and RN so they cannot collide with
+    Image Vision's IV on a shared model row.
+  - Colour left the constants: CAPACITY_META and PLUGIN_MARK_META carry no hue,
+    so a plugin tile is themed with the primary accent and a dense row stays
+    muted from the same component.
+  - The plugin card tile now states its own state - accent tint plus ring when
+    on, flat neutral when off - instead of colouring the glyph.
+
+# v0.5.210 (2026-10-18) · 2 commits
+
+## What Was Removed
+
+- **Prompt Injection feature and menu deleted**: the dashboard page (`/dashboard/prompt-injection`), its API (`/api/prompt-injection`), the `promptInjectionRepo`, the chat-handler call sites (combo/model and provider/model), the sidebar entry, the guard's protected-path entry, the permission rules, and the DB backup/restore carrying of the `promptInjections` kv scope are all gone; the feature's test suite is removed with it. Existing `promptInjections` kv rows are left in place (forward-only, no destructive migration) but nothing reads or writes them any more.
+
+# v0.5.209 (2026-10-18) · 2 commits
+
+## What Was Fixed
+
+- **API-key quota card no longer under-reports after log cleanup**: `/api/usage/api-keys` summed `usageHistory` only, so a key at 20.65M/100M showed 6.4M (6%) once history rows were pruned by export/import cycles. The card now shows `max(apiKeys.usedTokens column, window sum)` — the column is what `validateApiKey` enforces, the log stays a fallback that still wins right after a window rollover.
+
+# v0.5.208 (2026-10-18) · 2 commits
+
+## What Was Fixed
+
+- **Invalid API-key logins now count toward the lockout**, same as wrong passwords: `POST /api/auth/login` with an unknown/disabled/expired/IP-locked key replies `Invalid API key. N attempt(s) left before lockout.`, burns the same `recordFail` counter via `loginLimiter`, and reaches the same 429 `Too many failed attempts` lock after the limit. Quota-exhausted keys still sign in (v0.5.207). Audit event now carries the remaining attempts.
+
+# v0.5.207 (2026-10-18) · 2 commits
+
+## What Was Fixed
+
+- **Exhausted API keys can still sign in to the dashboard**: `POST /api/auth/login` previously rejected `QUOTA_EXCEEDED` with 401, so a key at its token limit (e.g. 100M/100M) could never open the dashboard to see its own usage bar. The login route now lets a quota-exhausted key through (session + audit event `apikey_login_quota`); request-side enforcement is unchanged — `/v1/*` still fails because the SSE handler validates the key again. Disabled/expired/IP-locked keys are still rejected at login.
+
+# v0.5.206 (2026-10-18) · 2 commits
+
+## What Was Fixed
+
+- **Relay deploy jobs no longer fail with `Cannot find module '@/app/api/proxy-pools/cloudflare-deploy/route'`**: `deploy-relay` resolved its route with `await import(modPath)` from a variable map, which webpack cannot trace (it emitted `Critical dependency: the request of a dependency is an expression`), so at runtime Node saw the raw `@/` alias and threw. The map now holds static importer functions (`() => import("@/app/api/proxy-pools/<provider>-deploy/route")`), so every route is a literal webpack bundles. `health-check`, which already used a literal, was unaffected.
+
+# v0.5.205 (2026-10-18) · 2 commits
+
+## What Was Fixed
+
+- **No floating progress UI left**: `LongTaskBanner` no longer renders its `fixed inset-0` scrim or the collapsed `bottom-20 right-4` corner chip — a fixed banner returns `null`. Progress for every long task now lives solely in the notification bell (`taskStore` → `NotifToast`), so nothing duplicates it in a screen corner. The no-op helpers (`revealBackgroundedTasks`, `subscribeToTaskReveal`) stay exported for existing callers. Inline in-modal `ProgressCard fixed={false}` readouts are unchanged.
+
+# v0.5.204 (2026-10-18) · 2 commits
+
+## What Was Fixed
+
+- **Loading states consolidated into the notification bell**: Importing/exporting the database, importing models, batch-testing provider connections, and deploying proxy relays no longer render a blocking `fixed inset-0` scrim or a `fixed bottom-right` corner chip. Every long-running operation now reports only through the bell task store (`taskStore` → `NotifToast`), matching the v0.5.198 contract. Modal-inline `ProgressCard` instances (`fixed={false}`) are retained.
+
+# v0.5.203 (2026-10-18) · 2 commits
+
+## What Was Fixed
+
+- **Proxy pool fallback for no-auth providers**: Support automatic fallback and exclusion for rotating proxy pools on free/no-auth providers (`opencode`). Tag virtual connections with `proxy:<id>` so 403 `FreeTierError`, 429, and 5xx trigger seamless fallback across healthy pools without prematurely aborting requests.
+- **OpenCode DeepSeek V4.1 Flash**: Aligned `OPENCODE_FAMILIES` regex to properly match `deepseek-v4.1-flash-free` and registered it with full format support (`[openai, claude, openai-responses]`).
 
 # v0.5.202 (2026-10-17) · 2 commits
 
