@@ -15,9 +15,29 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.2` on upstream `v0.5.218` (2026-10-18).
+**Current build:** `fork.3` on upstream `v0.5.218` (2026-10-19).
 
 ---
+
+## fork.3 — 2026-10-19 · base v0.5.218
+
+### What's New
+
+- **`ocz` / `oc` model lists aligned with the OpenCode catalogue** (86 ids on
+  https://opencode.ai/docs/zen/, scraped 2026-10-19).
+  - `ocz` (OpenCode Zen): added the three ids it was missing —
+    `claude-sonnet-4`, `deepseek-v4-flash-vision-exp`, `nemotron-3-ultra-free`.
+    The registry now matches the page 1:1 (86/86, verified by set comparison).
+  - `oc` (OpenCode Free): added the eight free ids it lacked — `beam-free`,
+    `glm-5.3-flash-free`, `longcat-2.5-preview-free`, `mimo-v2.6-flash-free`,
+    `nemotron-3-ultra-free`, `nemotron-3.5-lightning-free`,
+    `nemotron-3.5-super-vl-free`, `space-bunny-free` — bringing it to 13 entries.
+    The five oc-only ids (`muse-spark-1.2-contributor-free`,
+    `muse-spark-1.3-contributor-free`, `union-alpha`, `deepseek-v4.1-flash-free`,
+    `jev-1.13-free`) are kept: they do not exist on the Zen page and
+    `transport.quirks.forceAutoToolChoiceModels` still points at one of them.
+  - The paid ids are deliberately **not** added to `oc`: that lane is `noAuth`
+    and answers 401 for them, so listing them only produces failed calls.
 
 ## fork.2 — 2026-10-18 · base v0.5.218
 

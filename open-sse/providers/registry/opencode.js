@@ -37,6 +37,17 @@ export default {
     { id: "union-alpha", name: "Union Alpha Free", targetFormat: "claude" },
     { id: "deepseek-v4.1-flash-free", name: "DeepSeek V4.1 Flash Free", supportedFormats: ["openai", "claude", "openai-responses"] },
     { id: "jev-1.13-free", name: "Jev 1.13 Free", kind: "systemone" },
+    // Free tier of the Zen catalogue (https://opencode.ai/docs/zen/, 2026-10-19):
+    // the paid ids on that page are deliberately absent — this lane is no-auth and
+    // only the free ones answer without a key.
+    { id: "beam-free", name: "Beam Free", supportedFormats: ["openai"] },
+    { id: "glm-5.3-flash-free", name: "GLM-5.3-Flash Free", supportedFormats: ["openai"] },
+    { id: "longcat-2.5-preview-free", name: "LongCat 2.5 Preview Free", supportedFormats: ["openai"] },
+    { id: "mimo-v2.6-flash-free", name: "MiMo-V2.6-Flash Free", supportedFormats: ["openai"] },
+    { id: "nemotron-3-ultra-free", name: "Nemotron 3 Ultra Free", supportedFormats: ["openai"] },
+    { id: "nemotron-3.5-lightning-free", name: "Nemotron 3.5 Lightning Free", supportedFormats: ["openai"] },
+    { id: "nemotron-3.5-super-vl-free", name: "Nemotron 3.5 Super VL Free", supportedFormats: ["openai"] },
+    { id: "space-bunny-free", name: "Space Bunny Free", supportedFormats: ["openai"] },
   ],
   serviceKinds: ["llm", "systemone"],
   systemoneConfig: {
