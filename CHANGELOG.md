@@ -1,8 +1,16 @@
+# v0.5.217 (2026-10-18) · 3 commits
+
+## What Was Added / Fixed  (ported from upstream decolua/9router: PRs #5009, #5003, #5006)
+
+- **Usage table opens on most recently used** (#5009): the by-model / account / API-key / endpoint tables defaulted to an alphabetical `rawModel` sort, so the rows that just moved were buried mid-list. The default sort is now `lastUsed` descending; clicking any column header still overrides it through the URL params.
+- **`opencode/glm-5.3-flash-free` accepts reasoning again** (#5003): the id had no exact capability entry, so it resolved through the `*glm-5.3*` pattern and emitted z.ai's native `thinking:{type:"enabled"}` — which OpenCode's own inference service (a strict validator, not z.ai) answers with `400 json: unknown field "thinking"`. An exact-id `MODEL_CAPABILITIES` entry now sets `thinkingFormat:"openai"`, so these requests carry `reasoning_effort` and stream. Mirrors the existing `opencode-go` override for the paid twin.
+- **CommandCode cache reads are recorded and the session id is stable** (#5006): the usage mapper dropped `cachedInputTokens`, so CommandCode traffic showed 0 cached on 4.7B prompt tokens while the same combo's OpenCode-Go leg showed 94%; the cache split is now mapped through to `prompt_tokens_details.cached_tokens` for both the client and the dashboard. Session identity now mints one conversation-scoped id shared by the `x-session-id` header and the envelope `threadId` (it used to mint two uncorrelated UUIDs per request).
+
 # v0.5.216 (2026-10-18) · 1 commit
 
-## What Was Fixed
+## What Was Added
 
-- **CodeBuddy Intl (`cbai/*`) failed 100% of requests with HTTP 400 code 11128**: the intl gateway (codebuddy.ai) added "channel verification" on 2026-10-15, so every request that did not carry the `X-Conversation-*` header family the official IDE sends was rejected with `11128` ("conversation id missing", displayTips: "This call failed channel verification, possibly because it was not sent from an official client"). `CodeBuddyIntlExecutor` now overrides `buildHeaders` to mirror the official client: `X-Conversation-ID` is derived stably from the session key (RFC-4122-v5-shaped UUID, falling back to the opening user message, then to a random UUID), plus a fresh `X-Conversation-Request-ID` and `X-Conversation-Message-ID` per request. Verified A/B against the live upstream with the same credentials and body: headers absent → `400`/`11128`, headers present → `200` with normal SSE streaming. `codebuddy-cn` (copilot.tencent.com) is not gated upstream and stays untouched.
+- **Search box above the combo list** (ported from upstream decolua/9router PR #5008): filters case-insensitively over the combo name and the ids of its member models, shows an `N of M shown` counter while a query is active with an inline clear button, and renders an empty state with a **Clear search** action when nothing matches. The list now renders `filteredCombos` instead of the full set. Bulk operations were untouched (the fork has no header select-all), so a hidden combo can never be bulk-deleted.
 
 # v0.5.215 (2026-10-18) · 1 commit
 
