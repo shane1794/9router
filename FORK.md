@@ -26,6 +26,12 @@ So the split is:
 Because the fork no longer modifies any file upstream also modifies, syncing is a plain
 merge with no conflicts.
 
+**One deliberate exception:** `src/shared/constants/config.js` carries a single fork
+line (`version: withForkTag(pkg.version)`) so the sidebar can show the fork tag. It is
+the only upstream-owned line the fork edits. If a sync ever conflicts there, take
+upstream's `version: pkg.version` and re-apply the one-line change — the rest of the
+file is untouched.
+
 ## Syncing from upstream
 
 ```bash

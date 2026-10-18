@@ -15,9 +15,24 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.1` on upstream `v0.5.218` (2026-10-18).
+**Current build:** `fork.2` on upstream `v0.5.218` (2026-10-18).
 
 ---
+
+## fork.2 — 2026-10-18 · base v0.5.218
+
+### What's New
+
+- **The dashboard now shows the fork tag next to the version.** The sidebar read
+  `v0.5.218`, indistinguishable from a stock upstream build, so "is this install
+  patched?" could not be answered from the UI. It now reads `v0.5.218-fork.2`.
+  - `src/shared/constants/forkVersion.js` (new, fork-owned) exports `FORK_VERSION`
+    and `withForkTag()`.
+  - `src/shared/constants/config.js` — one line: `version: withForkTag(pkg.version)`.
+  - Bump `FORK_VERSION` when a fork change lands; the upstream version half follows
+    every sync automatically.
+  - `package.json` still carries upstream's exact version, and the update check keeps
+    comparing that value, so the "update available" banner is unaffected.
 
 ## fork.1 — 2026-10-18 · base v0.5.217
 
