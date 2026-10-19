@@ -15,9 +15,28 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.3` on upstream `v0.5.219` (2026-10-19).
+**Current build:** `fork.4` on upstream `v0.5.225` (2026-10-19).
 
 ---
+
+## fork.4 — 2026-10-19 · base v0.5.225
+
+### What Changed
+
+- **fork.1 is upstreamed — the local codebuddy-intl patch is gone.** Upstream
+  `87dd2615` (*fix(codebuddy-intl): port PR #4949 WorkBuddy intl headers and
+  conversation id family*, v0.5.220) now sends the whole `X-Conversation-*`
+  family plus the trace family (`X-Root-Request-ID`, `X-Request-ID`,
+  `traceparent`, `b3`, `X-B3-*`), which is a superset of what fork.1 did.
+  - `open-sse/executors/codebuddy-intl.js` now matches upstream byte-for-byte; the
+    merge conflict there was resolved with `--theirs`.
+  - `tests/unit/codebuddy-intl-conversation-headers.test.js` (fork.1) was removed:
+    it pinned a conversation id derived from the session key, and upstream now
+    sends a fresh UUIDv7 per call. Upstream's own
+    `tests/unit/codebuddy-intl-identity-4946.test.js` covers the new contract.
+  - Behaviour note: conversation ids are no longer stable across retries of the
+    same turn. That is upstream's verified choice ("keeps no history under the
+    conversation id"), not a regression from this fork.
 
 ## fork.3 — 2026-10-19 · base v0.5.218
 
@@ -55,6 +74,9 @@ lives here instead.
     comparing that value, so the "update available" banner is unaffected.
 
 ## fork.1 — 2026-10-18 · base v0.5.217
+
+**Status: superseded** — upstream shipped an equivalent fix in v0.5.220 (`87dd2615`);
+the local patch was dropped in fork.4. Kept here for history.
 
 ### What Was Fixed
 
