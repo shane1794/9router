@@ -33,7 +33,7 @@ export default {
     { format: "openai-responses", baseUrl: "https://opencode.ai/zen/v1/responses", auth: { combined: true, header: "Authorization", scheme: "bearer" } },
   ],
   // supportedFormats follow the endpoint table in https://opencode.ai/docs/zen/
-  // (live /zen/v1/models, 2026-10-19: 86 ids).
+  // (live /zen/v1/models, 2026-10-19: 86 ids; 92 with the ids synced from upstream).
   models: [
     // Claude (messages)
     { id: "claude-fable-5", name: "Claude Fable 5", supportedFormats: ["claude"] },
@@ -54,6 +54,8 @@ export default {
     { id: "qwen3.5-plus", name: "Qwen3.5 Plus", supportedFormats: ["claude"] },
     { id: "qwen3.6-plus", name: "Qwen3.6 Plus", supportedFormats: ["claude"] },
     { id: "qwen3.8-flash", name: "Qwen3.8 Flash", supportedFormats: ["claude"] },
+    // Synced from upstream: free curated id on the keyed lane, Claude wire.
+    { id: "union-alpha", name: "Union Alpha", supportedFormats: ["claude"] },
     // Gemini (own path, via chat completions transport)
     { id: "gemini-3-flash", name: "Gemini 3 Flash", supportedFormats: ["openai"] },
     { id: "gemini-3.1-pro", name: "Gemini 3.1 Pro", supportedFormats: ["openai"] },
@@ -94,6 +96,9 @@ export default {
     { id: "grok-build-0.1", name: "Grok Build 0.1", targetFormat: "openai-responses", supportedFormats: ["openai-responses"] },
     { id: "muse-spark-1.2", name: "Muse Spark 1.2", targetFormat: "openai-responses", supportedFormats: ["openai-responses"] },
     { id: "muse-spark-1.3", name: "Muse Spark 1.3", targetFormat: "openai-responses", supportedFormats: ["openai-responses"] },
+    // Contributor lane ids, synced from upstream (same Responses endpoint).
+    { id: "muse-spark-1.2-contributor-free", name: "Muse Spark 1.2 Contributor Free", targetFormat: "openai-responses", supportedFormats: ["openai-responses"] },
+    { id: "muse-spark-1.3-contributor-free", name: "Muse Spark 1.3 Contributor Free", targetFormat: "openai-responses", supportedFormats: ["openai-responses"] },
     // DeepSeek / GLM / MiniMax / Kimi / Mistral / Big Pickle (chat completions)
     { id: "big-pickle", name: "Big Pickle", supportedFormats: ["openai"] },
     { id: "deepseek-v4-flash", name: "deepseek-v4-flash", supportedFormats: ["openai"] },
@@ -124,7 +129,11 @@ export default {
     { id: "nemotron-3-ultra-free", name: "Nemotron 3 Ultra Free", supportedFormats: ["openai"] },
     { id: "nemotron-3.5-lightning-free", name: "Nemotron 3.5 Lightning Free", supportedFormats: ["openai"] },
     { id: "nemotron-3.5-super-vl-free", name: "Nemotron 3.5 Super VL Free", supportedFormats: ["openai"] },
+    { id: "deepseek-v4-flash-free", name: "DeepSeek V4 Flash Free", supportedFormats: ["openai"] },
     { id: "space-bunny-free", name: "Space Bunny Free", supportedFormats: ["openai"] },
+    // Synced from upstream: still listed there, absent from the docs page scrape.
+    { id: "ling-3.0-flash-fin-free", name: "Ling 3.0 Flash Fin Free", supportedFormats: ["openai"] },
+    { id: "mimo-v2.5-free", name: "MiMo V2.5 Free", supportedFormats: ["openai"] },
     // System One (Jev) decision model on the native /systemone endpoint
     { id: "jev-1.13", name: "jev-1.13", kind: "systemone" },
   ],

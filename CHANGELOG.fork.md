@@ -15,9 +15,32 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.5` on upstream `v0.5.225` (2026-10-19).
+**Current build:** `fork.6` on upstream `v0.5.225` (2026-10-19).
 
 ---
+
+## fork.6 — 2026-10-19 · base v0.5.225
+
+### What Changed
+
+- **Model lists synced from upstream, keeping the docs-page alignment.** The fork
+  was a strict superset afterwards: nothing upstream lists is missing.
+  - `ocz` (OpenCode Zen): **92 ids** = 73 from upstream + 19 kept from fork.3.
+    Added the six ids only upstream had: `union-alpha` (Claude wire),
+    `deepseek-v4-flash-free`, `ling-3.0-flash-fin-free`, `mimo-v2.5-free`
+    (chat completions), and `muse-spark-1.2/1.3-contributor-free`
+    (Responses, `targetFormat: openai-responses`).
+  - `oc` (OpenCode Free): **13 ids**, already a superset of upstream's 5 — no
+    change needed.
+  - Verified by set comparison: `upstream − fork = ∅` for both registries.
+
+### Notes
+
+- `deepseek-v4-flash-free` is listed again because upstream lists it, but upstream
+  also marks it dead in `DEAD_FREE_OPENCODE_MODELS` (filters.js), so it never
+  shows up as a free suggestion.
+- The 19 fork-only `ocz` ids (GPT-6 line, Claude 5.5 line, `beam-free`,
+  `gemini-4-argon`, …) come from the docs-page scrape in fork.3 and are kept.
 
 ## fork.5 — 2026-10-19 · base v0.5.225
 
