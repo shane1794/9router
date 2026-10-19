@@ -15,7 +15,7 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.3` on upstream `v0.5.218` (2026-10-19).
+**Current build:** `fork.3` on upstream `v0.5.219` (2026-10-19).
 
 ---
 
