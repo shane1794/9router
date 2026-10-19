@@ -26,11 +26,16 @@ So the split is:
 Because the fork no longer modifies any file upstream also modifies, syncing is a plain
 merge with no conflicts.
 
-**One deliberate exception:** `src/shared/constants/config.js` carries a single fork
+**Deliberate exceptions** (the only upstream-owned code the fork edits):
+`src/shared/constants/config.js` carries a single fork
 line (`version: withForkTag(pkg.version)`) so the sidebar can show the fork tag. It is
 the only upstream-owned line the fork edits. If a sync ever conflicts there, take
 upstream's `version: pkg.version` and re-apply the one-line change — the rest of the
 file is untouched.
+
+`open-sse/executors/opencode.js` carries one fork helper (`stripMessageReasoning`,
+called from the chat lane) so non-reasoning models do not get `messages[].reasoning`.
+Same recipe on conflict: take upstream's function body and re-add the guarded call.
 
 ## Syncing from upstream
 

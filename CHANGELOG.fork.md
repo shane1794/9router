@@ -15,9 +15,39 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.4` on upstream `v0.5.225` (2026-10-19).
+**Current build:** `fork.5` on upstream `v0.5.225` (2026-10-19).
 
 ---
+
+## fork.5 — 2026-10-19 · base v0.5.225
+
+### What Was Fixed
+
+- **`oc/beam-free` returned HTTP 400 on every turn that carried history.**
+  The client (OpenCode CLI shape) attaches `reasoning` to assistant messages;
+  OpenCode's chat lane only accepts that on reasoning models. Anything else gets
+  the whole request rejected:
+  `400 [unsupported_parameter] Unrecognized request argument supplied:
+  messages[2].reasoning`. In one hour this produced 654 failed requests
+  (751 × 400 total for `oc/beam-free`, 18 successes).
+  - `open-sse/executors/opencode.js` now drops `messages[].reasoning`,
+    `reasoning_details` and `thought` on the chat lane when
+    `getCapabilitiesForModel(provider, model).reasoning` is false.
+    Reasoning models (e.g. `glm-5.3-flash-free`) keep the field untouched, and
+    the responses lane (`/inference/v1/responses`) is not affected.
+  - `tests/unit/opencode-message-reasoning-strip.test.js` (new) pins both sides:
+    stripped for `beam-free`, preserved for a reasoning model.
+
+### Known, not fixed here
+
+- **The 403s are network-level, not code.** `FreeTierError`:
+  "OpenCode's free models aren't available from your current network because
+  we've detected abusive traffic from this IP address". Reproduced with a plain
+  `curl` from this machine. Upstream's IP-protection fix correctly skips the
+  direct replay. Options: drop the proxy for the `oc` lane, or use OpenCode Go.
+- `oc/beam-free` was added to the fork's model list in fork.3, and the 400 burst
+  followed — but `beam-free` already appeared in the live free catalogue before
+  that, so the listing is not the cause of the upstream rejection.
 
 ## fork.4 — 2026-10-19 · base v0.5.225
 
