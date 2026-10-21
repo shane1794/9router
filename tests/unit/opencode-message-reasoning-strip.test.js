@@ -5,6 +5,7 @@
 import { describe, it, expect } from "vitest";
 import { OpenCodeExecutor } from "../../open-sse/executors/opencode.js";
 import { getCapabilitiesForModel } from "../../open-sse/providers/capabilities.js";
+import { stripUnsupportedParams } from "../../open-sse/translator/concerns/paramSupport.js";
 
 const exec = new OpenCodeExecutor();
 
@@ -46,5 +47,36 @@ describe("OpenCode chat lane drops per-message reasoning for non-reasoning model
     const body = { input: [{ type: "message", role: "user", content: [{ type: "input_text", text: "hi" }] }] };
     const out = exec.transformRequest("muse-spark-1.3-contributor-free", body, true, {});
     expect(Array.isArray(out.input)).toBe(true);
+  });
+});
+
+// The Zen and Go lanes run through DefaultExecutor, which calls
+// stripUnsupportedParams() before the executor's own transformRequest, so the same
+// rule covers them. Regression guard for the Zen-lane 400 seen on 2026-10-21.
+describe("every OpenCode lane shares the same drop rule", () => {
+  const lanes = [
+    ["opencode", "beam-free"],
+    ["opencode-zen", "beam-free"],
+    ["opencode-go", "beam-free"],
+  ];
+
+  for (const [provider, model] of lanes) {
+    it(`${provider}: strips messages[].reasoning for ${model}`, () => {
+      const body = bodyWithReasoning();
+      stripUnsupportedParams(provider, model, body);
+      expect(find(body, "thinking turn").reasoning).toBeUndefined();
+    });
+
+    it(`${provider}: keeps it for a reasoning model`, () => {
+      const body = bodyWithReasoning();
+      stripUnsupportedParams(provider, "glm-5.3-flash-free", body);
+      expect(find(body, "thinking turn").reasoning).toBe("step by step");
+    });
+  }
+
+  it("does not touch user turns", () => {
+    const body = { messages: [{ role: "user", content: "hi", reasoning: "not ours" }] };
+    stripUnsupportedParams("opencode-zen", "beam-free", body);
+    expect(body.messages[0].reasoning).toBe("not ours");
   });
 });

@@ -39,7 +39,21 @@ const STRIP_RULES = [
   // against /zen/go/v1/chat/completions with one key: 12/12 structured calls 400,
   // 4/4 identical calls without the field 200.
   { provider: "opencode-go", match: /^deepseek/i, drop: ["response_format"] },
+  // OpenCode (Free, Zen and Go lanes) rejects per-message `reasoning` for models that
+  // are not reasoning-capable: 400 [unsupported_parameter] "Unrecognized request
+  // argument supplied: messages[2].reasoning" (measured on beam-free, 2026-10-19 and
+  // again on the Zen lane 2026-10-21). Clients replay the field on assistant turns,
+  // which is exactly the path dropMessageFields covers. Reasoning models keep it.
+  { provider: "opencode", match: nonReasoningFor("opencode"), dropMessageFields: ["reasoning", "reasoning_details", "thought"] },
+  { provider: "opencode-zen", match: nonReasoningFor("opencode-zen"), dropMessageFields: ["reasoning", "reasoning_details", "thought"] },
+  { provider: "opencode-go", match: nonReasoningFor("opencode-go"), dropMessageFields: ["reasoning", "reasoning_details", "thought"] },
 ];
+
+// Predicate factory: a rule matches only when the target model is not
+// reasoning-capable. Declared as a function so it is hoisted above STRIP_RULES.
+function nonReasoningFor(provider) {
+  return (model) => !getCapabilitiesForModel(provider, model).reasoning;
+}
 
 // Test a rule's match (regex or predicate) against the model id.
 function matches(rule, model) {

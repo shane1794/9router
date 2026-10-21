@@ -7,7 +7,7 @@ import { injectReasoningContent } from "../utils/reasoningContentInjector.js";
 import { resolveSessionId } from "../utils/sessionManager.js";
 import { isMuseSparkModel } from "../providers/models/helpers.js";
 import { applyFingerprintTools } from "../utils/opencodeFingerprint.js";
-import { getCapabilitiesForModel } from "../providers/capabilities.js";
+import { stripUnsupportedParams } from "../translator/concerns/paramSupport.js";
 import { ANTHROPIC_API_VERSION } from "../providers/shared.js";
 import {
   normalizeResponsesInput,
@@ -191,22 +191,6 @@ function baseModelId(model) {
   return String(model || "").replace(/\([^()]+\)\s*$/, "").trim();
 }
 
-// Chat lane: agents attach per-message `reasoning` on assistant turns. Reasoning
-// models accept it, plain chat models reject the whole request with
-//   400 [unsupported_parameter] Unrecognized request argument supplied: messages[2].reasoning
-// (observed on beam-free and cat-jam-free, 2026-10-19). Drop the field when the
-// target model is not reasoning-capable, so the rest of the turn still goes through.
-function stripMessageReasoning(body) {
-  if (!Array.isArray(body?.messages)) return body;
-  for (const message of body.messages) {
-    if (!message || typeof message !== "object") continue;
-    delete message.reasoning;
-    delete message.reasoning_details;
-    delete message.thought;
-  }
-  return body;
-}
-
 function isResponsesModel(model) {
   const base = baseModelId(model);
   return RESPONSES_MODELS.has(base) || isMuseSparkModel(base);
@@ -386,9 +370,9 @@ export class OpenCodeExecutor extends BaseExecutor {
       applyFingerprintTools(body, true);
     } else if (body && typeof body === "object") {
       applyFingerprintTools(body, false);
-      if (!getCapabilitiesForModel(this.provider, baseModelId(model || body.model)).reasoning) {
-        stripMessageReasoning(body);
-      }
+      // Per-message `reasoning` on non-reasoning models 400s upstream; the
+      // rule lives in translator/concerns/paramSupport.js so every lane shares it.
+      stripUnsupportedParams(this.provider, baseModelId(model || body.model), body);
     }
     return injectReasoningContent({ provider: this.provider, model, body });
   }

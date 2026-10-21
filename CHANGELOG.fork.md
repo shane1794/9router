@@ -15,9 +15,36 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.7` on upstream `v0.5.252` (2026-10-21).
+**Current build:** `fork.8` on upstream `v0.5.252` (2026-10-21).
 
 ---
+
+## fork.8 — 2026-10-21 · base v0.5.252
+
+### What Changed
+
+- **The `messages[].reasoning` drop is now one shared rule instead of one executor patch.**
+  fork.5 patched only `open-sse/executors/opencode.js` (the no-auth Free lane), so the
+  same 400 came back on the keyed Zen lane:
+  `400 [unsupported_parameter] Unrecognized request argument supplied: messages[2].reasoning`
+  on `opencode-zen/beam-free`, 2026-10-21.
+- Added three `STRIP_RULES` entries in `open-sse/translator/concerns/paramSupport.js`
+  (`opencode`, `opencode-zen`, `opencode-go`) with a `nonReasoningFor(provider)` predicate,
+  reusing the existing `dropMessageFields` path. `DefaultExecutor.transformRequest()`
+  already calls `stripUnsupportedParams()`, so the Zen and Go lanes are covered without
+  touching their executors; `opencode.js` now calls it too and its local helper is gone.
+- Behaviour: `reasoning`, `reasoning_details` and `thought` are dropped from **assistant**
+  turns only, and only when the target model resolves to `reasoning: false`
+  (`beam-free`, `cat-jam-free`). Reasoning models keep the field.
+
+### Verification
+
+- `tests/unit/opencode-message-reasoning-strip.test.js`: 11 tests, all pass, now covering
+  all three lanes plus a "user turns are untouched" guard.
+- 62/63 across five neighbouring suites; the one failure is
+  `opencode-freetier-direct-replay.test.js`, proven pre-existing by `git stash` (identical
+  failure on the baseline).
+- Fork diff for `opencode.js` shrank from a 14-line helper to one call line.
 
 ## fork.7 — 2026-10-21 · base v0.5.252
 

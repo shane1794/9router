@@ -34,9 +34,13 @@ the only upstream-owned line the fork edits. If a sync ever conflicts there, tak
 upstream's `version: pkg.version` and re-apply the one-line change — the rest of the
 file is untouched.
 
-`open-sse/executors/opencode.js` carries one fork helper (`stripMessageReasoning`,
-called from the chat lane) so non-reasoning models do not get `messages[].reasoning`.
-Same recipe on conflict: take upstream's function body and re-add the guarded call.
+`open-sse/executors/opencode.js` carries one fork line: it calls
+`stripUnsupportedParams()` on the chat lane so non-reasoning models do not get
+`messages[].reasoning`. The rule itself lives in
+`open-sse/translator/concerns/paramSupport.js` (three `STRIP_RULES` entries, one per
+OpenCode lane), which the Zen and Go executors already run through
+`DefaultExecutor.transformRequest()`. Same recipe on conflict: take upstream's file and
+re-add the three rule lines plus the predicate, then re-add the one call line here.
 
 ## Syncing from upstream
 
