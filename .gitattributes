@@ -1,0 +1,10 @@
+# Fork-owned file (see FORK.md).
+#
+# Windows checkouts run with core.autocrlf=true, which rewrites every "\n" in a
+# markdown file to "\r\n". Two upstream tests compare markdown sources byte for
+# byte against a generated constant (tests/unit/antislop-prompt-parity.test.js),
+# so they pass on Linux CI and fail on a Windows checkout purely because of line
+# endings. Pinning markdown to LF keeps the working tree identical to the stored
+# blobs on every platform.
+*.md text eol=lf
+*.mdx text eol=lf
