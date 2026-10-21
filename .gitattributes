@@ -8,3 +8,7 @@
 # blobs on every platform.
 *.md text eol=lf
 *.mdx text eol=lf
+
+# The generator writes this file with LF, and its own --check compares the file
+# against the generated string, so it must stay LF on disk too.
+open-sse/rtk/antislopPrompt.js text eol=lf

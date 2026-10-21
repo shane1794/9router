@@ -22,6 +22,7 @@ So the split is:
 | `package.json` (`version`) | upstream | never edited here — kept byte-identical |
 | `CHANGELOG.fork.md` | fork | fork-only entries, numbered `fork.N` |
 | `FORK.md` | fork | this file |
+| `.gitattributes` | fork | new file; pins markdown (and the generated antislop prompt) to LF |
 
 Because the fork no longer modifies any file upstream also modifies, syncing is a plain
 merge with no conflicts.

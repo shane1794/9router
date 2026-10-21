@@ -15,9 +15,31 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.6` on upstream `v0.5.252` (2026-10-21).
+**Current build:** `fork.7` on upstream `v0.5.252` (2026-10-21).
 
 ---
+
+## fork.7 — 2026-10-21 · base v0.5.252
+
+### What Changed
+
+- **`.gitattributes` pins markdown to LF**, so upstream's byte-for-byte parity test
+  (`tests/unit/antislop-prompt-parity.test.js`, added in v0.5.251) passes on a Windows
+  checkout. `core.autocrlf=true` rewrote every `\n` in the `.md` sources to `\r\n`, which
+  inflated the generated prompt by one character per line (607 chars on the `full`
+  level) and made two of that suite's nine tests fail for a reason that has nothing to
+  do with the code.
+- Also pinned `open-sse/rtk/antislopPrompt.js` to LF: the generator writes LF and its
+  own `--check` compares the file on disk against the generated string, so a CRLF
+  checkout fails the same way.
+
+### Verification
+
+- `antislop-prompt-parity.test.js`: **9/9 passed** (was 7/9).
+- `node scripts/generateAntislopPrompt.mjs --check` → `antislopPrompt.js matches its sources`.
+- 61/61 tests across the six neighbouring suites, no regression from the line-ending change.
+- The generated file itself is byte-identical to upstream's — this only changes how git
+  checks markdown out, not any content.
 
 ## fork.6 — 2026-10-19 · base v0.5.225
 
