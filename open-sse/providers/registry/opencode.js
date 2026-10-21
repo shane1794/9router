@@ -32,22 +32,23 @@ export default {
   },
   models: [
     // Endpoint formats differ per model, so declare non-chat models explicitly.
-    { id: "muse-spark-1.2-contributor-free", name: "Muse Spark 1.2 Contributor Free", targetFormat: "openai-responses" },
-    { id: "muse-spark-1.3-contributor-free", name: "Muse Spark 1.3 Contributor Free", targetFormat: "openai-responses" },
-    { id: "union-alpha", name: "Union Alpha Free", targetFormat: "claude" },
-    { id: "deepseek-v4.1-flash-free", name: "DeepSeek V4.1 Flash Free", supportedFormats: ["openai", "claude", "openai-responses"] },
-    { id: "jev-1.13-free", name: "Jev 1.13 Free", kind: "systemone" },
+    { id: "muse-spark-1.2-contributor-free", name: "Muse Spark 1.2 Contributor Free", targetFormat: "openai-responses", isFree: true },
+    { id: "muse-spark-1.3-contributor-free", name: "Muse Spark 1.3 Contributor Free", targetFormat: "openai-responses", isFree: true },
+    { id: "union-alpha", name: "Union Alpha Free", targetFormat: "claude", isFree: true },
+    { id: "deepseek-v4.1-flash-free", name: "DeepSeek V4.1 Flash Free", supportedFormats: ["openai", "claude", "openai-responses"], isFree: true },
+    { id: "jev-1.13-free", name: "Jev 1.13 Free", kind: "systemone", isFree: true },
     // Free tier of the Zen catalogue (https://opencode.ai/docs/zen/, 2026-10-19):
     // the paid ids on that page are deliberately absent — this lane is no-auth and
-    // only the free ones answer without a key.
-    { id: "beam-free", name: "Beam Free", supportedFormats: ["openai"] },
-    { id: "glm-5.3-flash-free", name: "GLM-5.3-Flash Free", supportedFormats: ["openai"] },
-    { id: "longcat-2.5-preview-free", name: "LongCat 2.5 Preview Free", supportedFormats: ["openai"] },
-    { id: "mimo-v2.6-flash-free", name: "MiMo-V2.6-Flash Free", supportedFormats: ["openai"] },
-    { id: "nemotron-3-ultra-free", name: "Nemotron 3 Ultra Free", supportedFormats: ["openai"] },
-    { id: "nemotron-3.5-lightning-free", name: "Nemotron 3.5 Lightning Free", supportedFormats: ["openai"] },
-    { id: "nemotron-3.5-super-vl-free", name: "Nemotron 3.5 Super VL Free", supportedFormats: ["openai"] },
-    { id: "space-bunny-free", name: "Space Bunny Free", supportedFormats: ["openai"] },
+    // only the free ones answer without a key. All of them carry isFree: true so the
+    // unified free list (upstream v0.5.254) keeps them.
+    { id: "beam-free", name: "Beam Free", supportedFormats: ["openai"], isFree: true },
+    { id: "glm-5.3-flash-free", name: "GLM-5.3-Flash Free", supportedFormats: ["openai"], isFree: true },
+    { id: "longcat-2.5-preview-free", name: "LongCat 2.5 Preview Free", supportedFormats: ["openai"], isFree: true },
+    { id: "mimo-v2.6-flash-free", name: "MiMo-V2.6-Flash Free", supportedFormats: ["openai"], isFree: true },
+    { id: "nemotron-3-ultra-free", name: "Nemotron 3 Ultra Free", supportedFormats: ["openai"], isFree: true },
+    { id: "nemotron-3.5-lightning-free", name: "Nemotron 3.5 Lightning Free", supportedFormats: ["openai"], isFree: true },
+    { id: "nemotron-3.5-super-vl-free", name: "Nemotron 3.5 Super VL Free", supportedFormats: ["openai"], isFree: true },
+    { id: "space-bunny-free", name: "Space Bunny Free", supportedFormats: ["openai"], isFree: true },
   ],
   serviceKinds: ["llm", "systemone"],
   systemoneConfig: {
