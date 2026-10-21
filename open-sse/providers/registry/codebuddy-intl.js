@@ -72,7 +72,12 @@ export default {
     { id: "kimi-k2.7", name: "Kimi-K2.7-Code" },
     { id: "kimi-k2.6", name: "Kimi-K2.6" },
     { id: "kimi-k2.5", name: "Kimi-K2.5" },
-    { id: "hy3-preview", name: "Hy3 Preview" },
+    // hy3-preview was dropped server-side: the intl gateway answers 400 code 11102
+    // "model service info not found" (measured 2026-10-21). The CN gateway — same
+    // catalog per the comment above — publishes `hy3` and `hy4-preview` instead,
+    // which is the drop upstream already applied on the CN list.
+    { id: "hy3", name: "Hy3" },
+    { id: "hy4-preview", name: "Hy4-Preview" },
     { id: "deepseek-v4-pro", name: "DeepSeek-V4-Pro" },
     // deepseek-v4-flash replaced server-side by deepseek-v4.1-flash (same
     // catalog as CN; the old endpoint still answers 200 but the list is the contract).

@@ -15,9 +15,42 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.8` on upstream `v0.5.258` (2026-10-21).
+**Current build:** `fork.9` on upstream `v0.5.258` (2026-10-21).
 
 ---
+
+## fork.9 — 2026-10-21 · base v0.5.258
+
+### What Changed
+
+- **`codebuddy-intl` no longer offers the dropped `hy3-preview` id.** The intl gateway
+  answers `400 {"code":11102,"msg":"model [hy3-preview] service info not found"}`, so
+  every request to that model failed before reaching a token.
+- Replaced it with the two ids the gateway publishes: `hy3` and `hy4-preview`, mirroring
+  the drop upstream already applied on the CN list (`codebuddy-cn.js` documents
+  `hy3-preview` as "absent from the server list" and lists `hy3` / `hy4-preview` instead).
+  The intl registry's own comment states both gateways expose the same catalog.
+
+### Where the fix came from
+
+Not upstream: `serenhope/9router` at `3d8839d6` still ships `hy3-preview`, `decolua/9router`
+and `Raruu/9router` match, and 24 of the 26 forks do too. The correct id appears in two
+independent re-implementations, `techysy/10router` and `jhopan/PanRouter`, both of which
+list `hy3` and `hy4-preview` for the intl lane.
+
+### Verification
+
+- `tests/unit/codebuddy-intl-model-ids.test.js` (new, fork-owned): 4 tests — the dropped id
+  stays gone, both replacements stay present, no duplicate ids.
+- 25/25 across the four neighbouring codebuddy suites.
+
+### Known gap left alone
+
+`codebuddy-intl` has **no capability block** in `open-sse/providers/capabilities.js`
+(only `codebuddy-cn` does), so every intl model resolves to `reasoning: false`,
+`vision: false` with no context window. Not fixed here: that file is edited constantly
+upstream and a whole new block would conflict on every sync. Recorded as a candidate for a
+later patch.
 
 ## fork.8 — 2026-10-21 · base v0.5.252
 

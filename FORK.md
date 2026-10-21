@@ -42,6 +42,11 @@ OpenCode lane), which the Zen and Go executors already run through
 `DefaultExecutor.transformRequest()`. Same recipe on conflict: take upstream's file and
 re-add the three rule lines plus the predicate, then re-add the one call line here.
 
+`open-sse/providers/registry/codebuddy-intl.js` carries one fork edit: the model list
+drops `hy3-preview` (gateway answers 11102 "service info not found") and lists `hy3` /
+`hy4-preview` instead. Same recipe on conflict: take upstream's list and re-apply that
+one substitution. `tests/unit/codebuddy-intl-model-ids.test.js` guards it.
+
 ## Syncing from upstream
 
 ```bash
