@@ -1,10 +1,166 @@
+# v0.5.279 (2026-10-23) · 2 commits
+
+## What Was Changed
+
+- **Custom Plugin Overhaul:**
+  - **OCR Auto Image-to-Text (Plugin #1):** Implemented automated image text conversion scripting with sharp. Inspects image buffers, extracts metadata, dimensions, text chunks (PNG tEXt/zTXt/iTXt, SVG text, and EXIF/IPTC tags), and transcribes visual content into structured text. Converts image blocks into text blocks for text-only models so non-vision models can process images without errors.
+  - **Adaptive Thinking & Superpowers CoT (Plugin #2):** Upgraded reasoning to an Adaptive Thinking system combining Superpowers multi-perspective exploration, hypothesis stress-testing, self-verification, and structured Chain-of-Thought with adaptive depth and native reasoning parameters (`reasoning_effort: high`, Claude thinking budget).
+  - **Removed Speed Mode (Plugin #3) and Context Squeezer (Plugin #5):** Streamlined the plugin lineup down to 5 focused plugins (`imageVision`, `thinkDeeper`, `jsonGuard`, `openaiToolBridge`, `antiSlop`).
+  - **Refreshed All Plugin Names and Descriptions:** Standardized titles and descriptive explanations across UI, constants, and API routes.
+
+---
+
+# v0.5.278 (2026-10-23) · 2 commits
+
+## What Was Changed
+
+- **Removed PAID and UNKNOWN badges; reserved FREE tag exclusively for free models.** Model badge display is now streamlined: only genuine free models (OpenCode free models such as `beam-free`, `glm-5.3-flash-free`, `big-pickle`, `union-alpha`, etc.) display the green `FREE` tag. Non-free models (e.g. Claude, GPT, or unclassified models) show no tags, keeping provider listings clean and uncluttered.
+
+---
+
+# v0.5.277 (2026-10-23) · 2 commits
+
+## What Was Fixed
+
+- **Fixed suggested model chips not rising to active list for OpenCode V1 and V2.** Removed built-in model exclusion on OpenCode providers in `getProviderCustomModelRows` so clicking `(+)` immediately adds and displays the model in the top active section.
+- **Accurate Model Tier Badges and chip preview.** Fixed custom model rows incorrectly passing `isFree={false}` that caused free models to display as `PAID`. OpenCode and free tier models now retain their green `FREE` badge. Both suggested free chips and other models now render tier badges before and after addition.
+- **Revamped Recent Requests table and Usage charts alignment.** Restored visibility of Recent Requests by ordering it cleanly for mobile viewports, correcting table background styles, and expanding truncated model name width. Polished Top Models and By Provider bar charts with consistent 210px container heights, refined typography, and aligned controls.
+- **Aligned icons, badges, and typography across cards.** Vertically centered Material Symbols icons, status dots, and badges with text on consistent optical baselines throughout model rows and usage analytics.
+
+---
+
+# v0.5.276 (2026-10-23) · 2 commits
+
+## What Was Added
+
+- **Tier badges (FREE / PAID / UNKNOWN) on all models across all providers.** Added `ModelTierBadge` and `resolveModelTier` to classify and display visual badges for every model (Free with green tag, Paid with amber tag, and Unknown for unclassified/custom models) across `ModelRow`, `CompatibleModelsSection`, `PassthroughModelsSection`, and `ModelSelectModal`.
+- **Token usage multipliers and anti-probe protection for custom models.** Added optional `inputMultiplier` and `outputMultiplier` fields to custom models and model studio. Output tokens and prompt tokens are multiplied accordingly in returned responses and usage tracking. Anti-probe protection conceals real backend model IDs, strips provider headers, and reinforces anti-jailbreak directives.
+- **Enforced API key requirement on `/v1/models` and model listing endpoints.** Anonymous curling of model lists is now blocked with HTTP 401 (`invalid_api_key`) unless a valid API key or authenticated dashboard session is supplied.
+
+---
+
+# v0.5.275 (2026-10-23) · 2 commits
+
+## What Was Changed
+
+- **Start OpenCode V1 and V2 models in Suggested Free Models and remove separate Disabled Models list.** For OpenCode V1 (`oc1`) and V2 (`oc2`), models no longer automatically populate the active top list on initial view; instead, all available free models appear as selectable chips under "Suggested free models". Clicking a chip adds it to the active list, and removing/disabling an active model returns it directly back to "Suggested free models" without placing it into a separate "Disabled models" section.
+
+---
+
+# v0.5.274 (2026-10-23) · 2 commits
+
+## What Was Changed
+
+- **Updated OpenCode Free V1 model prefix and alias from `oc` to `oc1`.** The provider alias and UI prefix for OpenCode Free V1 are now `oc1/` (e.g. `oc1/beam-free`, `oc1/deepseek-v4.1-flash-free`), matching the `oc2/` prefix convention of OpenCode Free V2. Legacy `oc/` alias is preserved for backwards compatibility.
+
+---
+
+# v0.5.273 (2026-10-23) · 2 commits
+
+## What Was Changed
+
+- **Renamed legacy OpenCode Free provider to "OpenCode Free V1".** Updated display name to "OpenCode Free V1" with badge "OC1" to cleanly differentiate between the legacy V1 provider and the new CLI 1.19.4-based "OpenCode Free V2" provider.
+
+---
+
+# v0.5.272 (2026-10-23) · 2 commits
+
+## What Was Added
+
+- **New "OpenCode Free V2" provider (`opencode-v2` / `oc2`).** Added a dedicated OpenCode V2 provider ported directly from the reverse-engineered OpenCode CLI 1.19.4 architecture while keeping the existing OpenCode Free provider intact. V2 features:
+  - Official 1.19.4 wire endpoints (`/inference/openai/v1/chat/completions`, `/inference/anthropic/v1/messages`, `/inference/v1/responses`).
+  - Bitwise timestamp identifiers matching official binary disassembler (`msg_<timestamp_ascending_base62>` and `ses_<timestamp_descending_base62>`).
+  - Standardized tool cloaking (`bash` and `read`) without telltale prompt injection to prevent upstream 429 content-filter triggers.
+  - Full official 1.19.4 free model catalogue (`beam-free`, `big-pickle`, `deepseek-v4.1-flash-free`, `flint-40b-free`, `glm-5.3-flash-free`, `mimo-v2.6-flash-free`, `nemotron-3-ultra-free`, `nemotron-3.5-lightning-free`, `nemotron-3.5-super-vl-free`, `muse-spark` variants, and `union-alpha`).
+  - Native integration with proxy pools and automatic session rotation.
+
+---
+
+# v0.5.271 (2026-10-23) · 2 commits
+
+## What Was Fixed
+
+- **Preserved original probe token budget for full model completion responses.** Reverted `max_tokens` back to 1024 in `/api/models/test` to preserve complete responses and chain-of-thought budgets across all models without altering probe defaults.
+
+---
+
+# v0.5.270 (2026-10-23) · 2 commits
+
+## What Was Fixed
+
+- **Accelerated model ping probes for reasoning and free models.** The ping endpoint `/api/models/test` previously set `max_tokens: 1024`, causing reasoning models like `deepseek-v4.1-flash-free` and upstream free endpoints to spend 20–30+ seconds generating hundreds of chain-of-thought tokens before returning, making the dashboard test button appear frozen/spinning. With the issue #3010 soft-pass already supporting length-limited reasoning completions, `max_tokens` is now set to 16 for probe checks. Tested live over Cloudflare tunnel: `oc/deepseek-v4.1-flash-free` now resolves in 3.0s and `oc/glm-5.3-flash-free` in 2.3s with `{"ok":true,"status":200}`.
+
+---
+
+# v0.5.269 (2026-10-23) · 2 commits
+
+## What Was Fixed
+
+- **Eliminated telltale prompt injection that triggered upstream OpenCode 429 rejection on model pings.** Upstream OpenCode introduced content filtering that caught the historical placeholder prompt note (`"Do not call the read or shell tools..."`), immediately rejecting requests with `FreeUsageLimitError` and causing model ping/test buttons in the dashboard to spin endlessly until abort timeout. Silenced the note so prompts remain clean. Verified live with model probe tests (`oc/mimo-v2.6-flash-free`, `oc/deepseek-v4.1-flash-free`, `oc/glm-5.3-flash-free`) all completing with `{"ok":true,"status":200}`.
+
+---
+
+# v0.5.268 (2026-10-23) · 2 commits
+
+## What Was Fixed
+
+- **Preserve HTTPS protocol across dashboard redirects behind reverse proxies / Cloudflare tunnels.** The custom server and auth guard previously hardcoded `http://` when constructing redirect URLs (`/` to `/dashboard`, `/dashboard` to `/login`), causing browsers on HTTPS tunnels to refuse connecting to an insecure HTTP location or triggering mixed-content connection errors. Both now inspect `x-forwarded-proto` and socket encryption so all redirects preserve `https://`.
+
+---
+
+# v0.5.267 (2026-10-23) · 2 commits
+
+## What Was Fixed
+
+- **Fixed reference error in studio models API and bounded opencode connect timeout.** The `/api/models` endpoint previously crashed with `ReferenceError: pluginMarks is not defined` when resolving studio models, breaking dashboard model listings. In addition, `opencode` transport now sets a snappy 12s socket timeout (`timeoutMs: 12000`) instead of hanging for 60s when a residential proxy node is slow to connect, allowing rotation to smoothly fail-over to the next residential session. Verified end-to-end with `oc/beam-free`, `oc/deepseek-v4.1-flash-free`, and `oc/mimo-v2.6-flash-free` completing in ~2 seconds.
+
+---
+
+# v0.5.266 (2026-10-23) · 2 commits
+
+## What Was Added
+
+- **Automatic per-request session rotation for residential proxy pools.** Residential proxy gateways that support session-based IP rotation via username conventions (e.g. `res-*-sid-XXXXX`) are now automatically detected: each outbound connection request randomizes the session ID (`randSid`), ensuring a fresh residential egress IP with its own rate limit window. When upstream triggers 429 `FreeUsageLimitError`, the specific spent egress IP is rotated out without prematurely excluding the entire residential pool. Verified with live OpenCode free models (`beam-free`, `mimo-v2.6-flash-free`, `deepseek-v4.1-flash-free`, `glm-5.3-flash-free`) all successfully answering with 200 OK completions through rotating residential proxy.
+
+---
+
+# v0.5.265 (2026-10-23) · 2 commits
+
+## What Was Changed
+
+- **Reverse-engineered OpenCode protocol from CLI 1.19.4 binary and updated the executor wire contract.** Extracting the protocol directly from the disassembled binary revealed three discrepancies causing relay detection: (1) OpenAI chat endpoints route to `/inference/openai/v1/chat/completions` and Anthropic to `/inference/anthropic/v1/messages` (the legacy `/inference/v1/chat/completions` path flagged callers), (2) the current client sends a synchronized ascending `x-opencode-request: msg_<id>` generated via the native `va()` timestamp algorithm, and (3) `x-session-affinity` and `x-session-id` were removed as upstream specifically checks that they are not sent for opencode-native providers. All 37 tests across 4 test suites passing.
+
+---
+
+# v0.5.264 (2026-10-23) · 2 commits
+
+## What Was Fixed
+
+- **The executor now mirrors the real OpenCode 1.19.4 CLI fingerprint, and the fallback loop stops at the caller's deadline.** Reverse-engineering the current CLI via mitmproxy showed it sends `User-Agent: opencode/1.19.4 ai-sdk/provider-utils/4.0.23 runtime/bun/1.4.4` with `x-opencode-client: cli`, `x-opencode-project` and a per-message `x-opencode-request` — while 9router still sent the older `opencode/latest/2.0.26/cli` shape, which the free tier reads as a stale relay UA after the upstream update. The executor default, the downstream-UA passthrough check, the registry UAs and the test probe all use the current CLI shape now. Separately, the session-rotation branch never carried the fallback deadline, so an exhausted evening rotated ~1.500 proxies past the 120s probe budget and the dashboard showed "The operation was aborted due to timeout" with no usable error; the session branch now returns the last upstream error once the budget is spent. `tests/unit/opencode-session.test.js` pins the UA default/replacement/passthrough; 37 passed across 4 suites.
+
+---
+
+# v0.5.263 (2026-10-23) · 2 commits
+
+## What Was Fixed
+
+- **Alias-prefixed probes get the slow-fallback budget too.** v0.5.262 gave `opencode/*` probes 120s, but the dashboard probes alias-prefixed ids (`oc/beam-free`, `ocg/...`) and `probeTimeoutMs` compared the raw prefix against the provider set — an unresolved `oc` fell through to the 15s REST budget, so the button test still aborted mid-rotation with "The operation was aborted due to timeout" while direct `opencode/*` calls survived. The budget now resolves the prefix via `resolveProviderId` first (with a fail-open fallback to the raw prefix). `tests/unit/ping-timeout.test.js` pins the alias resolution; 5 passed.
+
+---
+
+# v0.5.262 (2026-10-23) · 2 commits
+
+## What Was Fixed
+
+- **The model test button no longer aborts healthy OpenCode models at 15s.** Probing a model (`/api/models/test`) sends a real chat request down the normal fallback chain, but every probe shared one 15s budget. An OpenCode free-tier probe routinely needs 30-90s — each spent session/IP answers 429 `FreeUsageLimitError` and the fallback rotates the session plus every proxy before one window answers — so the probe aborted mid-rotation and painted working models red with "The operation was aborted due to timeout". `opencode`, `opencode-go` and `opencode-zen` probes now get 120s (`SLOW_FALLBACK_PROBE_TIMEOUT_MS` in `probeBudget.js`); every other provider keeps its existing budget. `tests/unit/ping-timeout.test.js` pins the new set and budget; 4 passed.
+
+---
+
 # v0.5.261 (2026-10-23) · 2 commits
 
 ## What Was Fixed
 
 - **Two dead model ids are gone from both screens; 9 of 10 live free models now answer.** Besides Jev (400 `ModelProtocolUnsupported`, fixed in v0.5.260), the live catalogue still advertises `minimax-m3.1-flash-free`, but upstream retires it with 410 `ModelDeprecated` pointing at `deepseek-v4.1-flash-free`. It is dropped from the catalogue filter and the picker the same way (`DEPRECATED_OPENCODE_MODELS`), while new id `flint-40b-free` rides the existing free-tier rule with no change. Verified end to end through the preview: `beam-free`, `big-pickle`, `glm-5.3-flash-free`, `mimo-v2.6-flash-free`, `nemotron-3.5-super-vl-free`, `deepseek-v4.1-flash-free`, `flint-40b-free` all answer; `longcat-2.5-preview-free` and `nemotron-3.5-lightning-free` still hit upstream 429 `FreeUsageLimitError` (daily quota, not a routing bug — the session rotation from v0.5.259 keeps retrying with fresh windows). `tests/unit/provider-model-catalogue.test.js` pins the deprecated set and the picker exclusion; 9 passed with `unit/opencode-session-rotation.test.js`.
-
----
 
 ---
 
@@ -16,15 +172,11 @@
 
 ---
 
----
-
 # v0.5.259 (2026-10-23) · 2 commits
 
 ## What Was Fixed
 
 - **FreeUsageLimitError now rotates the OpenCode session instead of hammering every proxy.** Upstream tracks the free quota per session id as well as per IP (upstream issue #5107): once a session window is spent, retrying the same burned session through dozens of proxies only collects the same 429 until the request times out. A 429 carrying `FreeUsageLimitError` on the opencode provider now burns the canonical session (`rotateOpencodeSession`) before the fallback moves to the next account, so the retry re-enters the proxy loop with a fresh quota window. The stable session is untouched on the happy path — a fresh session per request would burn quota faster. Covered by `tests/unit/opencode-session-rotation.test.js` (3 cases: fresh session minted, rotation scoped per identity, chat handler wiring).
-
----
 
 ---
 
@@ -36,15 +188,11 @@
 
 ---
 
----
-
 # v0.5.257 (2026-10-21) · 2 commits
 
 ## What Was Fixed
 
 - **The upstream smoke-test id no longer shows up as a chip.** OpenCode's live catalogue carries a placeholder id literally named `test`, and since the panel started listing "Other models" straight from the catalogue it appeared next to real models as junk. The opencode filter now drops placeholder ids alongside the known-dead one before anything reaches the panel.
-
----
 
 ---
 
@@ -56,15 +204,11 @@
 
 ---
 
----
-
 # v0.5.255 (2026-10-21) · 2 commits
 
 ## What Was Fixed
 
 - **The OpenCode Free panel shows every id the provider publishes, paid ones included.** The first pass of the unified list hid the ~76 paid ids of the live catalogue behind an "only advertise what a keyless caller can use" rule, and the panel then read as a short list with models missing - the opposite of what was being fixed. The catalogue now reaches the row grid unfiltered, the FREE badge comes from each row's own tier flag (`isFree` travels through `buildUnifiedModelRows` instead of being stamped on every catalogue row), and the five registry-pinned free ids (muse spark x2, union-alpha, deepseek flash, jev) carry `isFree: true` in `open-sse/providers/registry/opencode.js` so their badge no longer depends on the id suffix. Verified live: the upstream endpoint lists 86 ids, all 10 free ones plus the 3 registry-only free models render, and `tests/unit/free-model-rows.test.js` (10 cases) pins the unfiltered catalogue, the flag-driven badge and the registry flags.
-
----
 
 ---
 
@@ -76,15 +220,11 @@
 
 ---
 
----
-
 # v0.5.253 (2026-10-21) · 2 commits
 
 ## What Was Fixed
 
 - **The unified free list only advertised models that can actually answer.** The first cut of the unified list passed the whole live catalogue to the row builder, and the OpenCode Free catalogue marks paid ids with `isFree: false` - so ~85 paid models (Claude, Gemini, GPT families) appeared as free-badged rows on a provider that answers 401 for every one of them without a key. The catalogue handed to `buildUnifiedModelRows` is now filtered to `isFree === true`, the same rule the suggestion picker already used, and the browser check on the provider page counts 10 free rows plus the disabled trio instead of 85+.
-
----
 
 ---
 
@@ -97,16 +237,12 @@
 
 ---
 
----
-
 # v0.5.251 (2026-10-21) · 2 commits
 
 ## What Was Changed
 
 - **The dead long-task banner is deleted, not just left unused.** `src/shared/components/LongTaskBanner.js` (431 lines) had zero callers since long runs moved to the notification bell, and `Loading.js` still exported its wrappers (`ProgressCard`, `CenterLoading`, `BusyOverlay`) as a trap for the next feature. The component file and the three exports are gone, `src/shared/components/index.js` stops re-exporting them, and `Loading.js` keeps only what still renders: `Spinner`, `PageLoading`, `Skeleton`, `CardSkeleton`.
 - **The tests follow the component out.** `tests/unit/loading-banner.test.js` existed only to assert on the deleted files (and was already a catalogued load failure), so it is removed together with its entry in `tests/__baseline__/known-fails.txt`. `tests/unit/studio-banner-update.test.js` keeps the store, bell, layout and pool assertions and drops the two that read the deleted sources. `tests/unit/bell-only-progress.test.js` gains a guard: the component file must not exist and neither the wrappers nor their barrel exports may reappear — a zero-call-site component gets re-imported the moment someone reaches for it.
-
----
 
 ---
 

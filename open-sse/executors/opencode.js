@@ -18,7 +18,13 @@ import {
 
 // OpenCode v2 UA shape: opencode/<channel>/<version>/<client>. Upstream rejects
 // the v1 "opencode/1.18.x" form with 403 FreeTierError since 2026-10-14.
-const OPENCODE_UA = "opencode/latest/2.0.26/cli";
+// Shape as of the 1.19.x CLI (reverse-engineered 2026-10-23 via mitmproxy):
+// "opencode/<version> ai-sdk/provider-utils/<v> runtime/bun/<v>" with
+// x-opencode-client: cli, x-opencode-project, and a per-message
+// x-opencode-request: msg_<...>. The 9router executor must keep mirroring
+// whatever the current CLI sends: a stale UA is how the free tier tells a
+// relay apart from the real client (upstream #5107).
+const OPENCODE_UA = "opencode/1.19.4 ai-sdk/provider-utils/4.0.23 runtime/bun/1.4.4";
 const OPENCODE_CLIENT = "cli";
 const MAX_SESSION_LENGTH = 256;
 const MAX_TOOL_NAME_LEN = 128;
@@ -28,8 +34,14 @@ export const OPENCODE_SESSION_RE = /^ses_[0-9a-f]{12}[0-9A-Za-z]{14}$/;
 const BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 function hasValidOpencodeVersion(ua) {
-  const m = String(ua || "").match(/^opencode\/[a-z0-9-]+\/(\d+)\.\d+\.\d+\/[a-z0-9-]+$/i);
-  return !!m && parseInt(m[1], 10) >= 2;
+  // Only the real current CLI shape passes through: the v2 channel shape
+  // ("opencode/<channel>/<major>.<minor>.<patch>/<client>") was the previous
+  // generation and now reads as a stale relay UA, so anything that is not the
+  // current "opencode/<version> ai-sdk/provider-utils/<v> runtime/bun/<v>"
+  // form is replaced with the current UA (reverse-engineered 2026-10-23 via
+  // mitmproxy against CLI 1.19.4). Anything else (curl, python, a pinned UA)
+  // is not the CLI.
+  return /^opencode\/\d+\.\d+\.\d+ ai-sdk\/provider-utils\/[\d.]+ runtime\/bun\/[\d.]+$/i.test(String(ua || ""));
 }
 // Models served by /inference/v1/responses; every other model stays on /chat/completions.
 const RESPONSES_MODELS = new Set([
@@ -73,6 +85,21 @@ export function generateSessionId(timestamp = Date.now()) {
   }
   counter++;
   return `ses_${descendingTimeHex(timestamp, counter)}${unstableRandom()}`;
+}
+
+export function generateRequestId(timestamp = Date.now()) {
+  if (timestamp !== lastTimestamp) {
+    lastTimestamp = timestamp;
+    counter = 0;
+  }
+  counter++;
+  const value = BigInt(timestamp) * 0x1000n + BigInt(counter);
+  const time = Array.from({ length: 6 }, (_, index) =>
+    Number((value >> BigInt(40 - 8 * index)) & 0xffn)
+      .toString(16)
+      .padStart(2, "0")
+  ).join("");
+  return `msg_${time}${unstableRandom()}`;
 }
 
 export function translateSessionId(sessionId, clientTool = "") {
@@ -395,13 +422,14 @@ export class OpenCodeExecutor extends BaseExecutor {
     return super.execute({ ...args, credentials: this.prepareRequestCredentials(args) });
   }
 
-  // Free tier moved from /zen/v1 to /inference/v1 (OpenCode v2); /zen/v1 now
-  // answers every free request with 403 FreeTierError.
+  // Free tier endpoints matching OpenCode 1.19+ CLI:
+  // OpenAI chat format routes to /inference/openai/v1/chat/completions,
+  // Anthropic messages format routes to /inference/anthropic/v1/messages.
   buildUrl(model) {
     const base = this.config.baseUrl;
     if (isResponsesModel(model)) return `${base}/inference/v1/responses`;
-    if (isMessagesModel(model)) return `${base}/inference/v1/messages`;
-    return `${base}/inference/v1/chat/completions`;
+    if (isMessagesModel(model)) return `${base}/inference/anthropic/v1/messages`;
+    return `${base}/inference/openai/v1/chat/completions`;
   }
 
   buildHeaders(credentials, stream = true, url = "") {
@@ -414,8 +442,9 @@ export class OpenCodeExecutor extends BaseExecutor {
 
     const session = credentials?.[SESSION_FIELD] || this.prepareRequestCredentials({ credentials })[SESSION_FIELD];
 
-    // Mirrors the v2 CLI. Upstream needs x-opencode-session-id next to
-    // x-opencode-session, and rejects any x-opencode-request (v1 only) with 403.
+    // Mirrors the current CLI (OpenCode 1.19.4). The official client sends
+    // x-opencode-request alongside x-opencode-session / session-id, and omits
+    // x-session-affinity and x-session-id (which are only for non-opencode providers).
     const headers = {
       "Content-Type": "application/json",
       "Authorization": "Bearer public",
@@ -423,8 +452,7 @@ export class OpenCodeExecutor extends BaseExecutor {
       "x-opencode-client": lower["x-opencode-client"] || OPENCODE_CLIENT,
       "x-opencode-session": session,
       "x-opencode-session-id": session,
-      "x-session-affinity": session,
-      "x-session-id": session,
+      "x-opencode-request": generateRequestId(),
       "x-opencode-project": lower["x-opencode-project"] || "global",
       "Accept": stream ? "text/event-stream" : "*/*",
     };

@@ -2,18 +2,20 @@ export default {
   id: "opencode",
   priority: 40,
   hasFree: true,
-  alias: "oc",
-  uiAlias: "oc",
+  alias: "oc1",
+  uiAlias: "oc1",
+  aliases: ["oc"],
   display: {
-    name: "OpenCode Free",
+    name: "OpenCode Free V1",
     icon: "terminal",
     color: "#E87040",
-    textIcon: "OC",
+    textIcon: "OC1",
   },
   category: "free",
   noAuth: true,
   transport: {
     baseUrl: "https://opencode.ai",
+    timeoutMs: 12000,
     headers: {
       "x-opencode-client": "desktop",
     },
@@ -58,7 +60,7 @@ export default {
     baseUrl: "https://opencode.ai/zen/v1/systemone",
     headers: {
       "x-opencode-client": "desktop",
-      "User-Agent": "opencode/1.18.31",
+      "User-Agent": "opencode/1.19.4 ai-sdk/provider-utils/4.0.23 runtime/bun/1.4.4",
     },
   },
   modelsFetcher: { url: "https://opencode.ai/zen/v1/models", type: "opencode-free" },
