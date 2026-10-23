@@ -1,3 +1,23 @@
+# v0.5.261 (2026-10-23) · 2 commits
+
+## What Was Fixed
+
+- **Two dead model ids are gone from both screens; 9 of 10 live free models now answer.** Besides Jev (400 `ModelProtocolUnsupported`, fixed in v0.5.260), the live catalogue still advertises `minimax-m3.1-flash-free`, but upstream retires it with 410 `ModelDeprecated` pointing at `deepseek-v4.1-flash-free`. It is dropped from the catalogue filter and the picker the same way (`DEPRECATED_OPENCODE_MODELS`), while new id `flint-40b-free` rides the existing free-tier rule with no change. Verified end to end through the preview: `beam-free`, `big-pickle`, `glm-5.3-flash-free`, `mimo-v2.6-flash-free`, `nemotron-3.5-super-vl-free`, `deepseek-v4.1-flash-free`, `flint-40b-free` all answer; `longcat-2.5-preview-free` and `nemotron-3.5-lightning-free` still hit upstream 429 `FreeUsageLimitError` (daily quota, not a routing bug — the session rotation from v0.5.259 keeps retrying with fresh windows). `tests/unit/provider-model-catalogue.test.js` pins the deprecated set and the picker exclusion; 9 passed with `unit/opencode-session-rotation.test.js`.
+
+---
+
+---
+
+# v0.5.260 (2026-10-23) · 2 commits
+
+## What Was Fixed
+
+- **Jev ids no longer loop the fallback with an unwinnable 400.** `jev-1.13` / `jev-1.13-free` are System One decision models: upstream answers `ModelProtocolUnsupported` on the chat completions lane, so every chat request to them burned the whole proxy/fallback loop for a response that could never come (1.073 of the recent 400s). They are removed from the chat registry, the suggested-catalogue filter and the model picker — 12 free models stay visible and routable in both screens instead of 13 with one dead entry. Covered by `tests/unit/provider-model-catalogue.test.js` (9 cases).
+
+---
+
+---
+
 # v0.5.259 (2026-10-23) · 2 commits
 
 ## What Was Fixed

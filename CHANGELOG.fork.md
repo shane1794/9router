@@ -15,7 +15,12 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.9` on upstream `v0.5.259` (2026-10-23).
+**Current build:** `fork.9` on upstream `v0.5.261` (2026-10-23).
+
+The `oc` list is **12 ids** since `v0.5.261`: upstream dropped `jev-1.13-free`
+(it has no chat route — `/inference/v1/chat/completions` answers
+`ModelProtocolUnsupported`, and `/zen/v1/systemone` is a decision lane), and the
+merge took that removal. The eight ids fork.3 added are still listed.
 
 ---
 
