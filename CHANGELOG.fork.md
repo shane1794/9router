@@ -15,7 +15,18 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.10` on upstream `v0.5.292` (2026-10-24).
+**Current build:** `fork.10` on upstream `v0.5.293` (2026-10-24).
+
+**Note on `v0.5.293` (`35276d92`):** this upstream commit embeds a residential proxy
+for `opencode-v2` — credentials in base64 inside `open-sse/utils/opencodeV2Proxy.js`,
+shown in the UI as `https://t.me/abcseren` instead of the real endpoint
+(`aliyun.dennak.com`). Merged deliberately: the free lanes share one quota per
+identity/IP, and a different egress is the only lever that resets it. Two things to
+know: it is **on by default** (only `OPENCODE_V2_PROXY` overrides it, and an empty
+value falls back to the embedded one, so there is no env switch to turn it off), and
+because a proxy is configured, a dead proxy makes `opencode-v2` fail 502 with no
+direct fallback by design. Verified reachable on 2026-10-24: `CONNECT
+opencode.ai:443` → `200 Connection established`.
 
 The `oc` list is **12 ids** since `v0.5.261`: upstream dropped `jev-1.13-free`
 (it has no chat route — `/inference/v1/chat/completions` answers
