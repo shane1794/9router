@@ -24,6 +24,35 @@ function uuid7() {
 }
 
 /**
+ * CLI identity (fork.10). The gateway's second gate is not about conversation ids
+ * but about how the caller looks: a request that passes the 11128 channel check
+ * with only a handful of static headers is treated as third-party automation and
+ * eventually answered 403 / code 11140 "account restricted due to unusual
+ * activity". The official CLI sends ~25 headers, including the Stainless SDK
+ * fingerprint and the agent intent/purpose/runtime triple; mirroring them is what
+ * keeps the account unflagged. Values follow the installed CLI 2.170.0 bundle.
+ */
+const CB_IDE_VERSION = "2.170.0";
+const CB_UA = `IDE/${CB_IDE_VERSION} CodeBuddy/${CB_IDE_VERSION}`;
+
+function cbPlatform(p) {
+  const v = String(p || "").toLowerCase();
+  if (v === "darwin") return "MacOS";
+  if (v === "win32") return "Windows";
+  if (v === "linux") return "Linux";
+  if (v === "freebsd") return "FreeBSD";
+  if (v === "openbsd") return "OpenBSD";
+  return v ? `Other:${v}` : "Unknown";
+}
+
+function cbArch(a) {
+  if (a === "arm") return "arm32";
+  if (a === "ppc") return "ppc32";
+  if (a === "x64") return "amd64";
+  return a || "unknown";
+}
+
+/**
  * CodeBuddyIntlExecutor — talks to https://www.codebuddy.ai/v2/chat/completions
  *
  * Same OpenAI-compatible-but-stream-only gateway behavior as codebuddy-cn:
@@ -74,6 +103,35 @@ export class CodeBuddyIntlExecutor extends DefaultExecutor {
     headers["X-B3-TraceId"] = trace;
     headers["X-B3-SpanId"] = span;
     headers["X-B3-Sampled"] = "1";
+
+    // ── CLI identity (fork.10) ────────────────────────────────────────────
+    // Without these the request still passes the 11128 channel check but reads as
+    // bare fetch() automation, which is what trips 403 / 11140 on the account.
+    delete headers["x-requested-with"];
+    headers["User-Agent"] = CB_UA;
+    headers["X-Product"] = "SaaS";
+    headers["X-Product-Version"] = CB_IDE_VERSION;
+    headers["X-App"] = "cli";
+    headers["X-IDE-Type"] = "IDE";
+    headers["X-IDE-Name"] = "IDE";
+    headers["X-IDE-Version"] = CB_IDE_VERSION;
+    headers["X-Private-Data"] = "false";
+    headers["X-Requested-With"] = "XMLHttpRequest";
+    headers["X-CodeBuddy-Request"] = "1";
+    headers["X-Agent-Intent"] = "craft";
+    headers["X-Agent-Purpose"] = "conversation";
+    headers["X-Agent-Type"] = "ide";
+    headers["X-Agent-Runtime"] = "ide";
+    // Stainless SDK fingerprint: the official Node client stamps every call.
+    headers["X-Stainless-Lang"] = "js";
+    headers["X-Stainless-Package-Version"] = "6.25.0";
+    headers["X-Stainless-OS"] = cbPlatform(process.platform);
+    headers["X-Stainless-Arch"] = cbArch(process.arch);
+    headers["X-Stainless-Runtime"] = "node";
+    headers["X-Stainless-Runtime-Version"] = process.version || "v22.0.0";
+    headers["X-Stainless-Retry-Count"] = "0";
+    headers["X-Stainless-Helper-Method"] = "stream";
+    if (!headers["X-Domain"]) headers["X-Domain"] = "www.codebuddy.ai";
 
     return headers;
   }

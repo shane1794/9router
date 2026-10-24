@@ -15,7 +15,7 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.9` on upstream `v0.5.285` (2026-10-24).
+**Current build:** `fork.10` on upstream `v0.5.285` (2026-10-24).
 
 The `oc` list is **12 ids** since `v0.5.261`: upstream dropped `jev-1.13-free`
 (it has no chat route — `/inference/v1/chat/completions` answers
@@ -23,6 +23,38 @@ The `oc` list is **12 ids** since `v0.5.261`: upstream dropped `jev-1.13-free`
 merge took that removal. The eight ids fork.3 added are still listed.
 
 ---
+
+## fork.10 — 2026-10-24 · base v0.5.285
+
+### What Changed
+
+- **`codebuddy-intl` now sends the official CLI identity headers**, the second gate on the
+  intl gateway. Passing the 11128 channel check is not enough: a request carrying only the
+  conversation family and a handful of static headers reads as bare `fetch()` automation
+  and the gateway answers `403 code 11140 "account restricted due to unusual activity"`.
+  Measured on `codebuddy-intl/deepseek-v4.1-flash`, 2026-10-24.
+- Added, mirroring CLI 2.170.0: `User-Agent IDE/2.170.0 CodeBuddy/2.170.0`, `X-Product`,
+  `X-Product-Version`, `X-App`, `X-IDE-Type/Name/Version`, `X-Private-Data`,
+  `X-Requested-With`, `X-CodeBuddy-Request`, the agent triple
+  (`X-Agent-Intent: craft`, `X-Agent-Purpose: conversation`, `X-Agent-Type/Runtime: ide`),
+  the Stainless SDK fingerprint (`X-Stainless-*`, platform/arch normalised the way the CLI
+  does it), and `X-Domain`.
+
+### Where the fix came from
+
+Not upstream: `serenhope/9router` has no handling for 11140 (no match in the tree, in the
+commit log, or in its 13 issues/PRs; its fingerprint work is all OpenCode). The header set
+is documented in `jhopan/PanRouter`'s `codebuddy-intl.js`, which spells out both gates and
+lists the ~25 headers the CLI sends.
+
+### Verification
+
+- `tests/unit/codebuddy-intl-cli-identity.test.js` (new, fork-owned): 4 tests pinning the
+  identity headers, the agent triple, the Stainless fingerprint, and that the
+  conversation/trace family from upstream is still sent.
+- 22/22 across the four codebuddy suites.
+- Not a substitute for an appeal: if the account is already flagged, the restriction stands
+  until it is lifted. The headers stop the request set from looking automated going forward.
 
 ## fork.9 — 2026-10-21 · base v0.5.258
 

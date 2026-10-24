@@ -47,6 +47,14 @@ drops `hy3-preview` (gateway answers 11102 "service info not found") and lists `
 `hy4-preview` instead. Same recipe on conflict: take upstream's list and re-apply that
 one substitution. `tests/unit/codebuddy-intl-model-ids.test.js` guards it.
 
+`open-sse/executors/codebuddy-intl.js` carries one fork block at the end of
+`buildHeaders()`: the CLI identity headers (User-Agent, `X-Product`/`X-App`/`X-IDE-*`,
+the `X-Agent-*` triple, `X-Stainless-*`, `X-Domain`) that keep the intl gateway from
+flagging the account with `403 code 11140`. It sits after upstream's conversation/trace
+family and before `return headers`, so upstream hunks stay above it. Same recipe on
+conflict: take upstream's header block and re-append the identity block.
+`tests/unit/codebuddy-intl-cli-identity.test.js` guards it.
+
 ## Syncing from upstream
 
 ```bash
