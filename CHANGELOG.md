@@ -1,3 +1,71 @@
+# v0.5.292 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Full System Prompt & Multi-Turn Support for OpenCode Engine:**
+  - Implemented `formatOpencodeCliPrompt` in `open-sse/utils/opencodeCliRunner.js` to properly extract and structure all system instructions (`body.system`, `role: "system"`, `role: "developer"`), multi-turn conversation history, and user prompts before passing to the CLI engine.
+  - Enabled native CLI engine execution across both OpenCode V1 (`opencode.js`) and V2 (`opencode-v2.js`), ensuring Model Studio custom models and roleplay system prompts take effect completely without being discarded or blocked by upstream rate limits.
+
+---
+
+# v0.5.291 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Live Console Layout Harmonization:**
+  - Redesigned the Live Console tab to perfectly mirror the Error Records architectural layout.
+  - Implemented 4 summary metric cards (Total Lines, Errors, Warnings, Stream Status), unified 9Router search input, level segmented control, auto-scroll/copy/clear controls, and structured card list with category badges, line headers, and per-item copy actions.
+
+---
+
+# v0.5.290 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Search Bar Redesign & Anti-Slop Cleanup:**
+  - Standardized search bars across both Error Records and Live Console tabs using 9Router's native search input styling (`rounded-[10px]`, integrated search glyph, clear button, and brand focus ring).
+  - Stripped all theatrical AI-slop artifacts from the console view (removed fake macOS red/yellow/green window dots, fake prompt lines, pulsing block cursors, and redundant card wrappers).
+  - Streamlined log lines into a clean, flat developer output stream with high-contrast readable typography and simple empty states.
+
+---
+
+# v0.5.289 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Live Console UI Overhaul & Terminal Polish:**
+  - Redesigned the Live Console toolbar into a responsive 2-tier layout eliminating button clipping and overcrowding on mobile screens.
+  - Added dedicated search input with instant clear, segmented level filters (ALL, ERR, WARN, INFO), live connection badges, line counter, and full-sized touch actions (Scroll toggle, Copy, Clear).
+  - Enhanced the terminal window with macOS window controls, title bar (`runtime-stdout.log`), active buffer indicator, fixed gutter with line number separators, syntax tag highlighting, and an active listener prompt with pulsing cursor.
+
+---
+
+# v0.5.288 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Restored Global Theme Background & Glass Depth:**
+  - Fully restored the ambient glass theme background styling in `.dark.glass` so all pages maintain their luminous depth and signature aesthetic across the entire 9Router dashboard.
+- **Complete Design System & Theme Synchronization in Error & Console Logs:**
+  - Refactored `LogsClient` to natively utilize 9Router's official component primitives: `SegmentedControl` with sliding pill indicators for both view tabs and status filters, `Card` with standard elevation and glass styling, `Badge` semantic color variants, and theme-synchronized primary accents (`text-primary`, `bg-brand-500/10`).
+
+---
+
+# v0.5.287 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Unified Logs & Diagnostics Workbench:**
+  - Consolidated the separate Console Log and Error Monitor views into a single unified menu: **Error & Console Logs** (`/dashboard/logs`).
+  - Implemented a clean, anti-slop dual-mode workspace featuring:
+    - **Error Records**: structured exception audit cards with status classification (5xx, 429, Auth), quick copy, search filtering, and collapsible stack traces without fuzzy AI glow effects.
+    - **Live Console**: real-time stdout/stderr stream with status indicator, autoscroll controls, log level filters (ALL, ERR, WARN, INFO), and search.
+  - Backwards-compatible routes for `/dashboard/console-log` and `/dashboard/error-log` linking to the unified workspace.
+- **Refined Hide Error Copywriting:**
+  - Replaced wordy descriptions in Experiment Features with crisp, professional anti-slop copywriting explaining upstream error masking and internal log retention.
+
+---
+
 # v0.5.286 (2026-10-24) · 2 commits
 
 ## What Was Changed
