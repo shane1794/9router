@@ -15,7 +15,13 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.10` on upstream `v0.5.301` (2026-10-24).
+**Current build:** `fork.10` on upstream `v0.5.303` (2026-10-24).
+
+**Note on `v0.5.303` (`0e23c1b0`):** the embedded residential channel is no longer
+v2-only — `OpenCodeExecutor.execute()` now falls back to `resolveV2ChannelRoute()` when
+no proxy is bound, so the V1 lane routes through it too, and the V1 transport timeout
+went 12s → 45s to survive the handshake. The CLI runner is still tried first; the
+channel only applies to the network fallback.
 
 **Note on `v0.5.301` (`4a8e647a`):** upstream shipped the Windows half of the CLI
 runner — `.cmd`/`.exe`/`.bat` resolution plus `shell: isWin` on `spawn()` — so the
