@@ -1,3 +1,25 @@
+# v0.5.301 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Windows CLI Binary Resolution & Process Spawn Fix:**
+  - Fixed Windows `spawn ENOENT` when launching `opencode` on Windows hosts (e.g. `G:\9router
+ode_modules\.bin\opencode`).
+  - Prioritized Windows executable extensions (`.cmd`, `.exe`, `.bat`) over extensionless shell scripts in `findOpencodeBinary`.
+  - Added `shell: true` and `windowsHide: true` to `child_process.spawn` options on Windows so batch scripts execute seamlessly.
+
+---
+
+# v0.5.300 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Fix Erroneous FREE Badge on Non-Free Models in OpenCode V1 and V2:**
+  - Removed hardcoded `isFree={isOpenCode ? true : model.isFree}` flag which falsely marked non-free models (e.g., Claude, GPT) as Free when added to Available Models.
+  - Aligned custom and display model tier status with upstream suggested catalogue `isFree` metadata and pattern classification so paid models correctly display without the FREE badge.
+
+---
+
 # v0.5.299 (2026-10-24) · 2 commits
 
 ## What Was Changed
