@@ -15,7 +15,13 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.10` on upstream `v0.5.303` (2026-10-24).
+**Current build:** `fork.10` on upstream `v0.5.305` (2026-10-25).
+
+**Note on `v0.5.305` (`4fc3e1b4`):** the CLI runner is now skipped when the request
+carries client tools (`body.tools.length > 0`) — the CLI cannot execute an agent's
+tool loop, so agent clients (Cline, DeepSeek Harness, Claude Code) take the network
+path instead. Those requests therefore still hit the free-tier gates and fall back to
+the embedded residential channel; only tool-less calls get the CLI bypass.
 
 **Note on `v0.5.303` (`0e23c1b0`):** the embedded residential channel is no longer
 v2-only — `OpenCodeExecutor.execute()` now falls back to `resolveV2ChannelRoute()` when
