@@ -15,7 +15,16 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.10` on upstream `v0.5.293` (2026-10-24).
+**Current build:** `fork.10` on upstream `v0.5.299` (2026-10-24).
+
+**Note on `v0.5.294`–`v0.5.299`:** upstream renamed the embedded-proxy module from
+`opencodeV2Proxy.js` to `opencodeV2Channel.js` and now stores the endpoint
+XOR-scrambled (`ac93ee97`), so the credential is no longer readable in the source —
+obfuscation, not removal. It also added `opencode-ai` as a real dependency and a
+`where opencode` probe (`9d5c17f1`), which finally lets the CLI runner find a binary
+on Windows. Two caveats remain: the probe finds `opencode.cmd` but `spawn()` is
+still called without `shell: true`, which Node refuses for `.cmd` on Windows; and
+`eb285cfd` raised the v2 transport timeout to 45s for the residential handshake.
 
 **Note on `v0.5.293` (`35276d92`):** this upstream commit embeds a residential proxy
 for `opencode-v2` — credentials in base64 inside `open-sse/utils/opencodeV2Proxy.js`,
