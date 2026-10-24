@@ -1,3 +1,23 @@
+# v0.5.305 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Smart Tool-Aware Execution for OpenCode V1 and V2:**
+  - Route tool-bearing client requests (such as DeepSeek Harness, Cline, or Roo Code with tools/functions) directly to the wire HTTP executor rather than the CLI runner. The OpenCode CLI non-interactive mode only handles text prompt evaluation, so requests with client tools must preserve tool definitions via the wire HTTP protocol.
+  - Fail open when CLI produces no output instead of yielding an empty stream with `finish_reason: "error"` and zero output tokens.
+
+---
+
+# v0.5.304 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **OpenCode CLI Auto-Retry on Proxy Tunnel Drops:**
+  - Added multi-attempt retry with rotating residential proxy sessions inside `executeOpencodeCli` to handle occasional proxy tunnel 400/502 rejections from residential broadband nodes.
+  - Ensured CLI subprocess cleanly bubbles up errors to the standard executor fallback chain instead of emitting premature empty `finish_reason: error` chunks with zero output tokens.
+
+---
+
 # v0.5.303 (2026-10-24) · 2 commits
 
 ## What Was Changed

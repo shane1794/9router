@@ -372,14 +372,15 @@ export class OpenCodeV2Executor extends BaseExecutor {
 
     // Check if official OpenCode CLI engine is available on system
     const opencodeBin = findOpencodeBinary();
-    if (opencodeBin) {
+    const hasClientTools = Array.isArray(body?.tools) && body.tools.length > 0;
+    if (opencodeBin && !hasClientTools) {
       try {
         const rawModel = baseModelId(model || body?.model);
         const targetModel = `opencode/${rawModel}`;
         const promptText = formatOpencodeCliPrompt(body);
 
         if (promptText) {
-          return executeOpencodeCli({
+          return await executeOpencodeCli({
             opencodeBin,
             targetModel,
             promptText,
