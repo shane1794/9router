@@ -1,3 +1,67 @@
+# v0.5.285 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **UI Language Standardization to English:**
+  - Standardized all descriptions, notifications, labels, and placeholders across the dashboard interface to English (including Custom Plugins, Experiment Features, Error Log, Model Studio Multipliers, and Model Tier Badges).
+
+---
+
+# v0.5.284 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Containerized Deployment Support for OpenCode Engine:**
+  - Added global installation of `opencode-ai` CLI in the production `Dockerfile` builder stage and copied the binary to `/usr/local/bin/opencode` in the runner stage with required compatibility libraries (`gcompat`, `libstdc++`, `ca-certificates`).
+  - Extended dynamic binary discovery in `opencode-v2.js` to inspect standard PATH locations (`/usr/local/bin/opencode`, `/usr/bin/opencode`, etc.) and ensure working directories and HOME are properly initialized in containerized environments like Railway, Docker, or Kubernetes.
+
+---
+
+# v0.5.283 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **OpenCode Free V2 Dual-Mode Engine (Native CLI + Wire Fallback):**
+  - Integrated direct execution via the official OpenCode 1.19.4 binary runtime when installed locally (`/root/bin/opencode`), routing requests with full context and proxy options while returning seamless OpenAI-compatible streaming SSE chunks.
+  - Successfully bypassed upstream 403 FreeTierError / 429 FreeUsageLimitError, ensuring robust 200 OK completions.
+
+---
+
+# v0.5.282 (2026-10-23) · 2 commits
+
+## What Was Changed
+
+- **OpenCode Free V2 Reverse-Engineered Wire Protocol Alignment:**
+  - Upgraded OpenCode V2 tool fingerprinting to match the full 11-tool suite from official OpenCode CLI 1.19.4 (`bash`, `edit`, `glob`, `grep`, `read`, `skill`, `task`, `todowrite`, `webfetch`, `websearch`, `write`).
+  - Removed artificial `Authorization: Bearer public` header that triggered upstream proxy filter rejections.
+  - Aligned request parameters with genuine Bun runtime client wire behavior.
+
+---
+
+# v0.5.281 (2026-10-23) · 2 commits
+
+## What Was Changed
+
+- **Fixed 500 error in chat/completions route:** Resolved `ReferenceError: settings is not defined` inside `chatCore.js` by cleanly forwarding `hideError` boolean parameter from chat handler.
+- **Fixed smEnabled ReferenceError in models API:** Removed residual references to `smEnabled` (from removed Speed Mode) in `/api/models/route.js`.
+- **Enhanced OpenCode V2 session recovery:** Added `bodyHasSessionHints` helper to `opencode-v2.js` for robust session continuity across multi-turn turns.
+- **Fixed Error Log API and Ping Permissions:** Added `/api/error-logs` and `/api/models/test` to `permissionPaths.js` and `dashboardGuard.js`.
+
+---
+
+# v0.5.280 (2026-10-23) · 2 commits
+
+## What Was Changed
+
+- **Model Tier Consistency in Modal & Select:** Synchronized the green `FREE` badge across `ModelSelectModal`, ensuring models tagged as free in the provider view retain their exact badge and status in the model selection picker.
+- **Provider Models Isolation across All Providers:** In all provider detail pages, built-in catalog models now start un-hoisted in the "Suggested models" / "Suggested free models" lists and only rise to the active models section when explicitly clicked with `(+)`.
+- **Custom Model Studio Multipliers:** Added dedicated Input Multiplier and Output Multiplier fields to the Custom Model Studio form and displayed active multiplier tags on the custom model cards.
+- **Error Log System:** Added an **Error Log** page (`/dashboard/error-log`) under Console Log in the sidebar navigation with real-time logging, stack trace viewing, filtering, single/bulk copying, and deletion.
+- **Experiment Features (Hide Error):** Introduced the **Experiment Features** page (`/dashboard/experiments`) under 9Router Settings with an experimental "Hide Error" toggle that masks sensitive provider errors into `"There is an error but this error is hidden, try checking your error log."` while logging true errors to the Error Log.
+- **API Key Expiration Visibility:** Added expiration date countdown and status badges to API key rows in Endpoint & Keys as well as in the Key Quota card on the dashboard.
+
+---
+
 # v0.5.279 (2026-10-23) · 2 commits
 
 ## What Was Changed
