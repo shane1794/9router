@@ -1,9 +1,70 @@
+# v0.5.299 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **OpenCode CLI Binary Detection & 'Need Configuration' Status:**
+  - Added real-time binary detection for OpenCode CLI across host PATH, global bin, and local node_modules.
+  - When the OpenCode binary is not installed on the host running 9Router seren, OpenCode Free V2 displays a 'Need Configuration' warning badge and instructs the user to install the binary manually (`npm install -g opencode-ai` or curl script).
+
+---
+
+# v0.5.298 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **OpenCode Free V2 Upstream Timeout & Session Rotation Resiliency:**
+  - Increased `timeoutMs` for OpenCode V2 transport from 12s to 45s to accommodate high-latency residential broadband SSL handshakes and prevent premature `ProxyFetch connect timeout` aborts.
+  - Dynamized connection ID assignment in `src/sse/services/auth.js` per proxy rotation so free-tier quota exhaustion (`429 FreeUsageLimitError`) seamlessly retries with a fresh residential session and exit IP.
+
+---
+
+# v0.5.297 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Stealth Channel Routing Module Refactor:**
+  - Renamed and refactored the proxy module into `open-sse/utils/opencodeV2Channel.js` with XOR-scrambled binary payload encoding to prevent plain-text pattern detection and obscure internal routing parameters.
+
+---
+
+# v0.5.296 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Clean Dedicated Routing Banner (Buttonless):**
+  - Removed the standalone Telegram button from the OpenCode Free V2 dedicated proxy banner for a cleaner, compact, and balanced card layout.
+  - Retained the interactive inline link `proxy by: t.me/abcseren` with subtle external navigation icon and active radar beacon.
+
+---
+
+# v0.5.295 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Embedded Fingerprint Tool Schemas & Native CLI Auto-Detection:**
+  - Bundled all 11 official OpenCode CLI tool definitions into `open-sse/utils/opencodeV2Defs.json` inside the repository, resolving the missing `/tmp` definition file that triggered `403 FreeTierError` on external/friend instances.
+  - Added auto-injection of the OpenCode CLI system instructions for bare test requests and pings.
+  - Extended `findOpencodeBinary` to inspect `node_modules/.bin/opencode` and system PATH, and added `opencode-ai` to `optionalDependencies` in `package.json`.
+  - Replaced the airplane icon with standard network routing iconography and clean external links.
+
+---
+
+# v0.5.294 (2026-10-24) · 2 commits
+
+## What Was Changed
+
+- **Animated Dedicated Proxy Banner:**
+  - Redesigned the dedicated proxy routing banner for OpenCode Free V2 into an animated card titled `proxy by: t.me/abcseren`.
+  - Added continuous shimmer beam animations (`proxy-shimmer-beam`), gradient text flow (`proxy-text-gradient`), live beacon radar dot, and direct "Open Telegram" action button.
+
+---
+
 # v0.5.293 (2026-10-24) · 2 commits
 
 ## What Was Changed
 
 - **Dedicated Locked Proxy Routing for OpenCode Free V2:**
-  - Integrated high-reputation residential routing locked permanently for `opencode-v2` (`open-sse/utils/opencodeV2Proxy.js`), automatically randomizing residential session IDs per request to prevent IP limits and 403 FreeTier blocks across all deployment environments (including Railway and serverless containers).
+  - Integrated high-reputation residential routing locked permanently for `opencode-v2` (`open-sse/utils/opencodeV2Channel.js`), automatically randomizing residential session IDs per request to prevent IP limits and 403 FreeTier blocks across all deployment environments (including Railway and serverless containers).
   - Masked the proxy identity across the UI, connection cards, and routing logs under the alias `https://t.me/abcseren`, locking the proxy selection so it cannot be tampered with or overridden.
 
 ---
