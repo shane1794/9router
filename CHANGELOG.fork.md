@@ -15,7 +15,14 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.10` on upstream `v0.5.299` (2026-10-24).
+**Current build:** `fork.10` on upstream `v0.5.301` (2026-10-24).
+
+**Note on `v0.5.301` (`4a8e647a`):** upstream shipped the Windows half of the CLI
+runner — `.cmd`/`.exe`/`.bat` resolution plus `shell: isWin` on `spawn()` — so the
+403 bypass no longer needs a fork patch. Verified on this machine: the runner now
+resolves `node_modules/.bin/opencode.cmd` and `opencode --version` answers `1.19.4`.
+A rebuild is still required for the app process to pick it up; until then the v2
+lane keeps using the embedded proxy path.
 
 **Note on `v0.5.294`–`v0.5.299`:** upstream renamed the embedded-proxy module from
 `opencodeV2Proxy.js` to `opencodeV2Channel.js` and now stores the endpoint
