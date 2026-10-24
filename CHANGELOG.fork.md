@@ -15,7 +15,7 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.10` on upstream `v0.5.286` (2026-10-24).
+**Current build:** `fork.10` on upstream `v0.5.292` (2026-10-24).
 
 The `oc` list is **12 ids** since `v0.5.261`: upstream dropped `jev-1.13-free`
 (it has no chat route — `/inference/v1/chat/completions` answers
