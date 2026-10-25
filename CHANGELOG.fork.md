@@ -15,7 +15,14 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.10` on upstream `v0.5.318` (2026-10-26).
+**Current build:** `fork.10` on upstream `v0.5.319` (2026-10-26).
+
+**Note on `v0.5.319` (`fb3a5f6b`):** upstream removed the embedded residential channel
+entirely — `opencodeV2Channel.js` is deleted, the synthetic proxy connection in
+`auth.js` is gone (−55 lines), and the banner is stripped from `NoAuthProxyCard`.
+OpenCode now uses the direct egress plus any proxy pool the user binds, which means
+the earlier note about traffic going through a third-party proxy no longer applies.
+The `35276d92` merge recorded above is history: the code it added no longer exists.
 
 **Note on `v0.5.318` (`8b84f1e5` / `0693c1d1`):** upstream reversed course on the V1
 channel. `OpenCodeExecutor.execute()` no longer injects the embedded residential route
