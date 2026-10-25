@@ -15,7 +15,14 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.10` on upstream `v0.5.305` (2026-10-25).
+**Current build:** `fork.10` on upstream `v0.5.310` (2026-10-25).
+
+**Note on `v0.5.306`–`v0.5.310`:** the CLI runner now also skips prompts over 24000
+characters (`isSuitableForCli`), so large agent turns take the network path through the
+residential channel. The rest of the batch is build hygiene: `force-dynamic` added to
+~130 API routes, `use server` directives removed from route handlers, and `open-sse`
+mirrored into the standalone assets. If a local build starts failing after this, check
+`tests/unit/standalone-assets.test.js` first — it guards that mirroring.
 
 **Note on `v0.5.305` (`4fc3e1b4`):** the CLI runner is now skipped when the request
 carries client tools (`body.tools.length > 0`) — the CLI cannot execute an agent's
