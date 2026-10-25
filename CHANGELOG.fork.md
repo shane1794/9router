@@ -15,7 +15,13 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.10` on upstream `v0.5.310` (2026-10-25).
+**Current build:** `fork.10` on upstream `v0.5.314` (2026-10-25).
+
+**Note on `v0.5.314` (`9ef6439d`):** the individual custom plugins were replaced by a
+single Adaptive Thinking architecture — `customPluginsRuntime.js` lost ~200 lines and
+`pluginKeys.js` changed shape, so any plugin config saved under the old keys is no
+longer read. Nothing in the fork depends on those keys; the param-support rules, the
+registries and the codebuddy-intl headers are untouched by this batch.
 
 **Note on `v0.5.306`–`v0.5.310`:** the CLI runner now also skips prompts over 24000
 characters (`isSuitableForCli`), so large agent turns take the network path through the
