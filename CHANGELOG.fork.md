@@ -15,7 +15,15 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.10` on upstream `v0.5.314` (2026-10-25).
+**Current build:** `fork.10` on upstream `v0.5.318` (2026-10-26).
+
+**Note on `v0.5.318` (`8b84f1e5` / `0693c1d1`):** upstream reversed course on the V1
+channel. `OpenCodeExecutor.execute()` no longer injects the embedded residential route
+into `proxyOptions` — it now runs the plain wire first and only falls back to the host
+CLI when the wire answers 429 `FreeUsageLimitError` or 403 `FreeTierError`. The CLI
+runner also stopped skipping tool-bearing requests (CLI tool calling landed), so agent
+clients can take the CLI path again. Net effect: the embedded proxy is no longer the
+default for V1; it is opt-in through the proxy-pool picker.
 
 **Note on `v0.5.314` (`9ef6439d`):** the individual custom plugins were replaced by a
 single Adaptive Thinking architecture — `customPluginsRuntime.js` lost ~200 lines and
