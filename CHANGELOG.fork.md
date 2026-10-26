@@ -15,7 +15,7 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.10` on upstream `v0.5.319` (2026-10-26).
+**Current build:** `fork.11` on upstream `v0.5.319` (2026-10-26).
 
 **Note on `v0.5.319` (`fb3a5f6b`):** upstream removed the embedded residential channel
 entirely — `opencodeV2Channel.js` is deleted, the synthetic proxy connection in
@@ -90,6 +90,37 @@ The `oc` list is **12 ids** since `v0.5.261`: upstream dropped `jev-1.13-free`
 merge took that removal. The eight ids fork.3 added are still listed.
 
 ---
+
+## fork.11 — 2026-10-26 · base v0.5.319
+
+### What Changed
+
+- **Cohere chat now posts to the OpenAI-compatible surface.** Upstream's registry points
+  `transport.baseUrl` at `https://api.cohere.ai/v1/chat/completions`, which is not a route
+  on Cohere's gateway — every chat call answered **HTTP 405**. Changed to
+  `https://api.cohere.ai/compatibility/v1/chat/completions` (one line; the model list is
+  untouched on purpose).
+
+### Why it looked like a key problem
+
+`transport.validateUrl` stays `https://api.cohere.ai/v1/models`, a real GET endpoint, so the
+dashboard connection test passed while chat failed. Cohere v1 chat is `POST /v1/chat` and
+v2 is `POST /v2/chat`; only `/compatibility/v1` accepts an OpenAI-shaped body, which is what
+9router sends.
+
+### Where the fix came from
+
+Not upstream: `serenhope/9router`, `decolua/9router` and `techysy/10router` all still carry
+the broken path. Two forks of the same lineage already fixed it —
+`ZenRouter/ZenRouter` and `bloodf/durindoor` both use `/compatibility/v1/chat/completions`.
+Cohere's own docs give `base_url="https://api.cohere.ai/compatibility/v1"`.
+
+### Verification
+
+- `tests/unit/cohere-transport.test.js` (new, fork-owned): 3 tests — chat URL is the
+  compatibility path, it is not the bare `/v1/chat` path, `validateUrl` still points at
+  `/v1/models`.
+- 22/22 across four suites.
 
 ## fork.10 — 2026-10-24 · base v0.5.285
 

@@ -55,6 +55,12 @@ family and before `return headers`, so upstream hunks stay above it. Same recipe
 conflict: take upstream's header block and re-append the identity block.
 `tests/unit/codebuddy-intl-cli-identity.test.js` guards it.
 
+`open-sse/providers/registry/cohere.js` carries one fork line: `transport.baseUrl` points at
+`https://api.cohere.ai/compatibility/v1/chat/completions` instead of upstream's
+`/v1/chat/completions` (which 405s; `/v1/models` still validates, so the dashboard test
+looks green). Same recipe on conflict: take upstream's registry and re-apply that one URL.
+`tests/unit/cohere-transport.test.js` guards it.
+
 ## Syncing from upstream
 
 ```bash
