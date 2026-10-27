@@ -15,7 +15,7 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.11` on upstream `v0.5.320` (2026-10-27).
+**Current build:** `fork.12` on upstream `v0.5.320` (2026-10-27).
 
 **Note on `v0.5.319` (`fb3a5f6b`):** upstream removed the embedded residential channel
 entirely — `opencodeV2Channel.js` is deleted, the synthetic proxy connection in
@@ -90,6 +90,18 @@ The `oc` list is **12 ids** since `v0.5.261`: upstream dropped `jev-1.13-free`
 merge took that removal. The eight ids fork.3 added are still listed.
 
 ---
+
+## fork.12 — 2026-10-27 · base v0.5.320
+
+### What Changed
+
+- **fix(codebuddy-intl): strip generated IDs from static header overrides.**
+  `base.execute()` applies `providerOverrides.headers` via `Object.assign` after
+  `buildHeaders` runs, so any static override for `X-Conversation-ID`,
+  `X-Request-ID`, the trace family, etc. would freeze those values across
+  requests. `CodeBuddyIntlExecutor.execute()` now strips that family before
+  delegating to super so fresh per-request values always win. Non-generated
+  overrides (custom headers, `X-Custom-*`) still pass through unchanged.
 
 ## fork.11 — 2026-10-26 · base v0.5.319
 
