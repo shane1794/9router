@@ -15,7 +15,11 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.13` on upstream `v0.5.321` (2026-10-27).
+**Current build:** `fork.13` on upstream `v0.5.322` (2026-10-27).
+
+**Note on `v0.5.322` (`2d045af2`):** classify models whose id ends in `-free`
+as Suggested free models across the UI (provider page, suggested-models filter,
+model selector modal). No fork-patched files touched; auto-merged cleanly.
 
 **Note on `v0.5.321` (`ed10561c`):** upstream removed all webCookie providers
 (`chatgpt-web`, `deepseek-web`, `gemini-web`, `kimi-web`, `muse-web`, `uc-web`,
