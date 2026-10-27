@@ -15,7 +15,17 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.12` on upstream `v0.5.320` (2026-10-27).
+**Current build:** `fork.12` on upstream `v0.5.321` (2026-10-27).
+
+**Note on `v0.5.321` (`ed10561c`):** upstream removed all webCookie providers
+(`chatgpt-web`, `deepseek-web`, `gemini-web`, `kimi-web`, `muse-web`, `uc-web`,
+`veoaifree-web`) and `opencode-v2` entirely. `opencode` (formerly `oc1`) is renamed to
+`alias: "oc"` / `uiAlias: "oc"` / `name: "OpenCode Free"`. `jev-1.13-free` re-added as
+`kind: "systemone"` (decision lane, not chat). `deepseek-v4.1-flash-free` dropped from
+`oc` registry (already marked DEAD in filters.js). `reasoningAliasFields: true` added
+to the free lane's quirks for MiMo's OpenRouter-backed reasoning format. `timeoutMs`
+removed from transport. Fork conflict resolved as union: upstream's 4 models + fork's 8
+extra free-tier ids kept; `isFree: true` field removed to match upstream schema.
 
 **Note on `v0.5.320` (`dfa9ceb0`):** upstream merged decolua v0.5.111 (PR #17):
 per-egress 429 cooldown with full `Retry-After` parsing, bounded proxy failover via
