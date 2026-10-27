@@ -162,6 +162,35 @@ export class CodeBuddyIntlExecutor extends DefaultExecutor {
 
     return transformed;
   }
+  execute(opts) {
+    // Static header overrides (set via the provider-overrides API) must not
+    // clobber the per-request conversation/trace IDs that buildHeaders mints
+    // fresh on every call. Strip them from the override map before delegating
+    // so a stale override from cbai-fix.sh cannot freeze the IDs.
+    if (opts?.providerOverrides?.headers) {
+      const GENERATED = new Set([
+        "x-conversation-id",
+        "x-conversation-request-id",
+        "x-root-request-id",
+        "x-conversation-message-id",
+        "x-request-id",
+        "x-trace-id",
+        "traceparent",
+        "b3",
+        "x-b3-traceid",
+        "x-b3-spanid",
+        "x-b3-sampled",
+      ]);
+      const filtered = Object.fromEntries(
+        Object.entries(opts.providerOverrides.headers).filter(
+          ([k]) => !GENERATED.has(k.toLowerCase())
+        )
+      );
+      opts = { ...opts, providerOverrides: { ...opts.providerOverrides, headers: filtered } };
+    }
+    return super.execute(opts);
+  }
+
   parseError(response, bodyText) {
     if (bodyText) {
       try {
