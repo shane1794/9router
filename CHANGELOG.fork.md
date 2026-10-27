@@ -17,6 +17,17 @@ lives here instead.
 
 **Current build:** `fork.12` on upstream `v0.5.320` (2026-10-27).
 
+**Note on `v0.5.320` (`dfa9ceb0`):** upstream merged decolua v0.5.111 (PR #17):
+per-egress 429 cooldown with full `Retry-After` parsing, bounded proxy failover via
+`egress.js`, deterministic session-id counter cap (`SESSION_COUNTER_MAX = 16`),
+`translateSessionId` extended with `egressId` + `epoch` for per-egress session
+isolation, `fetchViaTransport` + `socksTunnel` for TLS-level fingerprinting, and
+`applyFingerprintSystemPrompt` for the `<env>` block in system prompts. Also: Ollama
+TTS/embeddings, Runcrate, Muse/ChatGPT/Veo/UC web providers, CommandCode and
+OpenCode Go Kimi K3.1 Pro, DeepSeek flash id fix, Claude Haiku adaptive thinking,
+GPT-6 reasoning effort, Codex image host update. Fork patch (`stripUnsupportedParams`
+in `opencode.js`) merged cleanly — different hunk from upstream's egress additions.
+
 **Note on `v0.5.319` (`fb3a5f6b`):** upstream removed the embedded residential channel
 entirely — `opencodeV2Channel.js` is deleted, the synthetic proxy connection in
 `auth.js` is gone (−55 lines), and the banner is stripped from `NoAuthProxyCard`.
