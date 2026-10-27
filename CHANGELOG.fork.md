@@ -15,7 +15,7 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.11` on upstream `v0.5.319` (2026-10-26).
+**Current build:** `fork.11` on upstream `v0.5.320` (2026-10-27).
 
 **Note on `v0.5.319` (`fb3a5f6b`):** upstream removed the embedded residential channel
 entirely — `opencodeV2Channel.js` is deleted, the synthetic proxy connection in
