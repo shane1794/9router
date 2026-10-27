@@ -116,6 +116,18 @@ merge took that removal. The eight ids fork.3 added are still listed.
 
 ---
 
+## fork.13.1 — 2026-10-28 · base v0.5.322
+
+### What Changed
+
+- **fix(update-banner): stop false "Update available" on fork installs.**
+  `updateCheck.js` compared the local git sha against `serenhope/9router` (upstream),
+  so the fork always appeared behind because it carries 65+ extra commits with
+  different SHAs. Patch: `GITHUB_CONFIG.apiRepo` reads `process.env.APP_REPO` first,
+  falling back to the upstream value. Set `APP_REPO=shane1794/9router` in `.env`
+  (or `next.config.mjs` env) to point the check at the fork. `.env.example` updated
+  with the commented-out setting and an explanation.
+
 ## fork.13 — 2026-10-27 · base v0.5.321
 
 ### What Changed

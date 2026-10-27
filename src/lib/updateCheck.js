@@ -110,7 +110,7 @@ function readGitRevision() {
 
 // Which commit master points at right now.
 async function fetchRemoteHead() {
-  const data = await githubJson(`/repos/${GITHUB_CONFIG.apiRepo}/commits/${GITHUB_CONFIG.branch}?per_page=1`);
+  const data = await githubJson(`/repos/${(process.env.APP_REPO || GITHUB_CONFIG.apiRepo)}/commits/${GITHUB_CONFIG.branch}?per_page=1`);
   const sha = data?.sha;
   if (!sha) return null;
   return {
@@ -214,7 +214,7 @@ function compareReleases(remote, local) {
 // ahead_by is exactly "how far behind the repository we are". An unknown or
 // unpublished local sha answers null, and the caller falls back to comparing shas.
 async function fetchPending(localSha) {
-  const data = await githubJson(`/repos/${GITHUB_CONFIG.apiRepo}/compare/${localSha}...${GITHUB_CONFIG.branch}?per_page=1`);
+  const data = await githubJson(`/repos/${(process.env.APP_REPO || GITHUB_CONFIG.apiRepo)}/compare/${localSha}...${GITHUB_CONFIG.branch}?per_page=1`);
   if (!data || !["behind", "ahead", "diverged", "identical"].includes(data.status)) return null;
   return { status: data.status, pendingBy: Number(data.ahead_by) || 0 };
 }
