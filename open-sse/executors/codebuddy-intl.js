@@ -29,28 +29,12 @@ function uuid7() {
  * with only a handful of static headers is treated as third-party automation and
  * eventually answered 403 / code 11140 "account restricted due to unusual
  * activity". The official CLI sends ~25 headers, including the Stainless SDK
- * fingerprint and the agent intent/purpose/runtime triple; mirroring them is what
- * keeps the account unflagged. Values follow the installed CLI 2.170.0 bundle.
+ * fingerprint and the agent intent/purpose triple; mirroring them is what
+ * keeps the account unflagged. Values verified against codebuddy2api
+ * (maiphucgiang/codebuddy2api) INTL_CLI_VERSION capture on 2026-10-27.
  */
-const CB_IDE_VERSION = "2.170.0";
-const CB_UA = `IDE/${CB_IDE_VERSION} CodeBuddy/${CB_IDE_VERSION}`;
-
-function cbPlatform(p) {
-  const v = String(p || "").toLowerCase();
-  if (v === "darwin") return "MacOS";
-  if (v === "win32") return "Windows";
-  if (v === "linux") return "Linux";
-  if (v === "freebsd") return "FreeBSD";
-  if (v === "openbsd") return "OpenBSD";
-  return v ? `Other:${v}` : "Unknown";
-}
-
-function cbArch(a) {
-  if (a === "arm") return "arm32";
-  if (a === "ppc") return "ppc32";
-  if (a === "x64") return "amd64";
-  return a || "unknown";
-}
+const CB_CLI_VERSION = "2.161.0";
+const CB_UA = `CLI/${CB_CLI_VERSION} CodeBuddy/${CB_CLI_VERSION}`;
 
 /**
  * CodeBuddyIntlExecutor — talks to https://www.codebuddy.ai/v2/chat/completions
@@ -104,33 +88,34 @@ export class CodeBuddyIntlExecutor extends DefaultExecutor {
     headers["X-B3-SpanId"] = span;
     headers["X-B3-Sampled"] = "1";
 
-    // ── CLI identity (fork.10) ────────────────────────────────────────────
-    // Without these the request still passes the 11128 channel check but reads as
-    // bare fetch() automation, which is what trips 403 / 11140 on the account.
+    // ── CLI identity — aligned with codebuddy2api intl capture (fork.13) ──────
+    // X-Agent-Type "main" and X-IDE-Type "CLI" are what the official intl CLI
+    // sends; "ide" / "IDE" triggered 11140 "unusual activity" (maiphucgiang/codebuddy2api
+    // INTL_CLI_VERSION = "2.161.0"). Stainless OS/Arch/Runtime pinned to match the
+    // reference capture (Linux / x64 / v24.21.0); process-dynamic values differ per
+    // host and increase fingerprint distance from the real CLI.
     delete headers["x-requested-with"];
     headers["User-Agent"] = CB_UA;
     headers["X-Product"] = "SaaS";
-    headers["X-Product-Version"] = CB_IDE_VERSION;
+    headers["X-Product-Version"] = CB_CLI_VERSION;
     headers["X-App"] = "cli";
-    headers["X-IDE-Type"] = "IDE";
-    headers["X-IDE-Name"] = "IDE";
-    headers["X-IDE-Version"] = CB_IDE_VERSION;
+    headers["X-IDE-Type"] = "CLI";
+    headers["X-IDE-Name"] = "CLI";
+    headers["X-IDE-Version"] = CB_CLI_VERSION;
     headers["X-Private-Data"] = "false";
     headers["X-Requested-With"] = "XMLHttpRequest";
     headers["X-CodeBuddy-Request"] = "1";
     headers["X-Agent-Intent"] = "craft";
     headers["X-Agent-Purpose"] = "conversation";
-    headers["X-Agent-Type"] = "ide";
-    headers["X-Agent-Runtime"] = "ide";
-    // Stainless SDK fingerprint: the official Node client stamps every call.
+    headers["X-Agent-Type"] = "main";
+    // Stainless SDK fingerprint pinned to the intl reference capture.
     headers["X-Stainless-Lang"] = "js";
     headers["X-Stainless-Package-Version"] = "6.25.0";
-    headers["X-Stainless-OS"] = cbPlatform(process.platform);
-    headers["X-Stainless-Arch"] = cbArch(process.arch);
+    headers["X-Stainless-OS"] = "Linux";
+    headers["X-Stainless-Arch"] = "x64";
     headers["X-Stainless-Runtime"] = "node";
-    headers["X-Stainless-Runtime-Version"] = process.version || "v22.0.0";
+    headers["X-Stainless-Runtime-Version"] = "v24.21.0";
     headers["X-Stainless-Retry-Count"] = "0";
-    headers["X-Stainless-Helper-Method"] = "stream";
     if (!headers["X-Domain"]) headers["X-Domain"] = "www.codebuddy.ai";
 
     return headers;

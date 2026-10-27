@@ -15,7 +15,7 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.12` on upstream `v0.5.321` (2026-10-27).
+**Current build:** `fork.13` on upstream `v0.5.321` (2026-10-27).
 
 **Note on `v0.5.321` (`ed10561c`):** upstream removed all webCookie providers
 (`chatgpt-web`, `deepseek-web`, `gemini-web`, `kimi-web`, `muse-web`, `uc-web`,
@@ -111,6 +111,25 @@ The `oc` list is **12 ids** since `v0.5.261`: upstream dropped `jev-1.13-free`
 merge took that removal. The eight ids fork.3 added are still listed.
 
 ---
+
+## fork.13 — 2026-10-27 · base v0.5.321
+
+### What Changed
+
+- **fix(codebuddy-intl): align CLI identity headers with official intl client to fix 11140.**
+  Error 11140 "account restricted due to unusual activity" was triggered by fingerprint
+  drift from the real CLI. Corrected using codebuddy2api (`maiphucgiang/codebuddy2api`)
+  `INTL_CLI_VERSION = "2.161.0"` as reference:
+  - `X-IDE-Type` / `X-IDE-Name`: `"IDE"` → `"CLI"`
+  - `X-IDE-Version` / `CB_CLI_VERSION`: `2.170.0` → `2.161.0`
+  - `User-Agent`: `IDE/2.170.0 CodeBuddy/2.170.0` → `CLI/2.161.0 CodeBuddy/2.161.0`
+  - `X-Agent-Type`: `"ide"` → `"main"`
+  - `X-Agent-Runtime`: removed (not sent by official CLI)
+  - `X-Stainless-OS`: pinned to `"Linux"` (was `process.platform`-dynamic)
+  - `X-Stainless-Arch`: pinned to `"x64"` (was `process.arch`-dynamic)
+  - `X-Stainless-Runtime-Version`: pinned to `"v24.21.0"` (was `process.version`)
+  - `X-Stainless-Helper-Method`: removed (not sent by official CLI)
+  - Dead helpers `cbPlatform()` / `cbArch()` removed.
 
 ## fork.12 — 2026-10-27 · base v0.5.320
 
