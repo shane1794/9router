@@ -15,7 +15,13 @@ Every entry records the upstream version it sits on as `base`. To read a build:
 they are the only files that would otherwise conflict on every sync. Fork identity
 lives here instead.
 
-**Current build:** `fork.13` on upstream `v0.5.323` (2026-10-28).
+**Current build:** `fork.13` on upstream `v0.5.324` (2026-10-28).
+
+**Note on `v0.5.324` (`d525805a`–`5ea5fcac`):** restore Gemini Web cookie provider
+(reverse-engineered); tool-calling bridge plugin; bulk key edit fields; duplicate
+custom model; model studio bulk edit; proxy import skips duplicate URLs; DB migration
+`005` renames saved `oc1/` aliases to `oc/`. No fork-patched files touched;
+auto-merged cleanly.
 
 **Note on `v0.5.323` (`32603e5c` / `117b675c`):** model selector now shows only
 user-added models; usage log UI improved with better recent-request display and
