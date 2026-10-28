@@ -1,3 +1,62 @@
+# v0.5.324 (2026-10-28)
+
+## Fixes
+- **Proxy pools — bulk import dropped entries**: the import job skipped a pasted line whenever its NAME was already taken, and the client names every line after its host, so a list pointing at one host:port with rotating credentials imported only the first row. Duplicates are now decided by the proxy URL (scheme and host lowercased, port made explicit, credentials kept as part of the identity), and a repeated name merely gets a `#2`, `#3` suffix so the rows stay tellable apart. A genuine duplicate URL is still skipped, and the run now reports it as `skipped N duplicate` instead of `skipped N existing`.
+
+## Features
+- **Custom models — bulk edit**: Model Studio rows have a checkbox, and selecting more than one raises a toolbar with **Select all** / **Clear** / **Bulk edit**. The dialog writes input multiplier, output multiplier and context window to every selected model in one call (`PATCH /api/model-editor/bulk`). Only those three fields are accepted - the callable name is the model id clients send and the target decides which upstream answers, so neither is re-pointed by a bulk action. Models that disappeared between the tick and the Apply are reported back and dropped from the selection instead of failing the call.
+- **Custom models — duplicate icon**: the row's duplicate button now matches the API-key copy button (same padding, hover tint and 14px glyph) instead of its own larger style.
+
+## Testing
+- `tests/unit/proxy-bulk-import.test.js` (5 cases) drives the real job store + SQLite: repeated names all import, duplicate URLs are skipped, spelling variants collapse, and a URL stored by an earlier run is skipped.
+- `tests/unit/model-editor-bulk.test.js` (5 cases): patch applies to every selected model, untouched fields survive, `0` clears a multiplier, non-whitelisted fields are refused, missing models are reported.
+
+---
+
+# v0.5.323 (2026-10-28)
+
+## Features
+- **Plugins — Tool Calling Bridge**: a new custom plugin that gives function calling to upstreams which have none (browser-session providers, and any model the capability table reports as text-only). The request's `tools` are folded into the prompt (schema, call format, highest-priority reminder appended last), assistant `tool_calls` and `role:"tool"` turns are flattened into readable prose, and the `tools` array is dropped so an upstream that rejects it never sees it. The reply is parsed back into standard `tool_calls`.
+  - Response parsing runs two passes: the shapes models invent on their own (`open-sse/translator/concerns/toolBridge.js`) and the two formats the bridge itself instructs (` ```tool_call ` fence and `<<TOOL_CALL>>` marker). A call naming a tool the client never offered is dropped instead of invented.
+  - Because a tool call can only be recovered from a whole reply, a bridged turn is fetched non-streaming and the JSON completion is replayed as SSE, so a streaming client still receives its stream.
+  - Models with a native tool lane are left untouched — their real schema is never replaced by prompt text.
+  - Enabled per model on the Plugins page; advertises `tools:true` in `GET /api/models` and draws a "Tool Calling" plugin mark.
+- **API keys — bulk edit**: the bulk dialog now covers every field the endpoint accepts; added `Budget counted in` (tokens / USD / requests), `Daily USD limit` and `Request limit`, and a **Select all N** shortcut in the selection bar. The key material, the secret value and the permission map stay out of bulk edits on purpose.
+- **Custom models — duplicate**: every model in Model Studio has a copy button that opens the create form pre-filled with the source model's rules (target, context window, input/output multiplier, system prompt, `owned_by`) under a unique name (`<name>-copy`, `-copy-2`, …).
+
+## Fixes
+- **Build**: the plugin runtime resolves the browser-session provider list through a lazy import. Importing the provider registry eagerly pulled every provider module into the plugin module's init graph, which crashed the build worker (SIGABRT) while static pages were generated.
+
+## Testing
+- New `tests/unit/tool-calling-bridge.test.js`: 10 cases over the request rewrite, the dispatch rules (browser session vs native lane), and the response-side recovery.
+
+---
+
+# v0.5.322 (2026-10-28)
+
+## Features
+- **Gemini Web (cookie)**: restore the `gemini-web` provider (aliases `gweb`, `gemini-cookie`) with a fresh reverse-engineered implementation. The executor talks directly to `gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate`, auto-fetches the XSRF token (`SNlM0e`) from `/app`, and rotates the session on 429.
+- **Gemini Web models** (live hex IDs from `batchexecute?rpcids=otAQ7b`):
+  - `gemini-3.5-flash-lite` (hex `8c46e95b1a07cecc`, mode 6) — no cookie required
+  - `gemini-3.8-flash` (hex `56fdd199312815e2`, mode 1) — default
+  - `gemini-3.1-pro` (hex `e6fa609c3fa255c0`, mode 3)
+  - `gemini-4-argon` (hex `95a4c0abcba24364`, mode 8)
+  - `-thinking` variants for all four (inner[80]=2 + header slot 15)
+  - Legacy aliases: `gemini-3.6-flash`, `gemini-3.7-flash` resolve to `gemini-3.8-flash`
+- **Gemini Web cookie capture**: auto-capture from Chromium via CDP (domains `gemini.google.com`, cookies `__Secure-1PSID` + `__Secure-1PSIDTS`).
+- **Gemini Web validation**: `POST /api/providers/validate` now probes the cookie by fetching `/app` and checking for `SNlM0e` / `BardChatUi`.
+- **Gemini Web tool bridge**: OpenAI `tools` array is encoded into the prompt and parsed back from prose (via `webCookieToolBridge.js`) — same pattern as the old implementation.
+
+## Fixes
+- **Gemini Web hex drift**: the old hardcoded hexes (`fbb127bbb056c959`, `cf41b0e0dd7d53e5`, `9d8ca3786ebdfbea`) no longer match the live catalogue. The new implementation uses the current hexes and falls back to the old ones via `LEGACY_HEX` mapping.
+- **Gemini Web model selection**: the server ignores `inner[]` mode slots when no model header is sent — every request silently lands on Flash-Lite. The new executor always sends `x-goog-ext-525001261-jspb` with the correct hex.
+
+## Testing
+- Unit tests restored: `tests/unit/gemini-web-tools.test.js` (25/25 passing)
+- Direct executor test: all 4 models respond via the user's cookie (Flash-Lite 42s, Flash 27s, Pro 7s, Argon 36s)
+
+---
+
 # v0.5.321 (2026-10-27)
 
 ## Breaking Changes
